@@ -98,6 +98,8 @@ S2 = cov(X2)
 S3 = cov(X3)
 
 Spooled = ( ((n2-1)*S2) + ((n3-1)*S3) ) / (n2+n3-2)
+
+Spooled
 ```
 
 
@@ -116,17 +118,22 @@ X3_barra = rbind(mean(X3_1),mean(X3_2))
 
 frac = (n3+n2)/(n3*n2)
 
-Tsqared = T(X2_barra-X2_barra) %*% inv(frac*Spooled) %*% (X2_barra-X2_barra)
+Tsqared = t(X2_barra-X3_barra) %*% solve(frac*Spooled) %*% (X2_barra-X3_barra)
 
 frac2 = (p*(n2+n3-2) ) / (n2+n3-p-1)
 
-f_p_n_n = qf(1-alpha, p, n2+n3-p-1)
+f_p_n_n = qf(1-alpha, p, (n2+n3-p-1))
 
 f_p_n_n_frac2 = f_p_n_n * frac2
 
 
-#Si Tsqared es mayor a 45 entonces no se acepta la prueba de hipotesis con una confianza del 99%
+#Si Tsqared es mayor a 45 entonces no se acepta la prueba de hipótesis con una confianza del 99%
 
+if (Tsqared > f_p_n_n_frac2) {
+  print("No se acepta la prueba de hipótesis con una confianza del 99%")
+} else {
+ print("Se acepta la prueba de hipótesis con una confianza del 99%") 
+}
 
 ```
 
