@@ -1,0 +1,236 @@
+---
+title: "T4_aed_Cabrera_Rodriguez_Ribero"
+author: "Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero"
+date: '2022-03-11'
+output: html_document
+---
+
+#### 1 Un investigador considera tres índices para medir la severidad de los ataques corazón. Los valores de esos indices para $n=40$ pacientes con ataque al corazón que llegan a las emergencias de un hospital producen las siguientes estadísticas resumidas.
+
+$$
+\overline{\mathbf{x}}=\left[\begin{array}{l}
+46.1 \\
+57.3 \\
+50.4
+\end{array}\right] \text { y } \mathbf{S}=\left[\begin{array}{rrr}
+101.3 & 63.0 & 71.0 \\
+63.0 & 80.2 & 55.6 \\
+71.0 & 55.6 & 97.4
+\end{array}\right]
+$$
+
+#### (a) Los tres índices son evaluados para cada paciente. Realice una prueba para la igualdad de las medias de los indices con $\alpha=0.05$.
+
+```{r}
+alpha = 0.05
+n=40
+q = 3
+X_barra = c(46.1, 57.3, 50.4)
+S = matrix(c(101.3, 63.0, 71.0, 63.0, 80.2, 55.6, 71.0, 55.6, 97.4), nrow = 3, ncol=3)
+
+C = rbind(c(1,-1,0),c(0,1,-1))
+
+T_square = (n*t(C%*%X_barra)%*%solve(C%*%S%*%t(C))%*%(C%*%X_barra))[1,1]
+
+fract = ((n-1)*(q-1))/(n-q+1)
+F_q_n = qf(1-alpha, df1 = q-1,df2=n-q+1)
+
+fract_F = fract * F_q_n
+T_square
+fract_F
+```
+Nótese que $T^2 = `r T_square` >> `r fract_F`$, por lo tanto, las medias no son igual con un nivel de confianza de 0.95.
+
+#### (b) Juzgue las diferencias entre pares de las medias de los índices usando intervalos de confianza $\left(T^{2}\right)$ simultáneos del $95 \%$.
+
+
+```{r}
+alpha = 0.05
+n=40
+q=3
+X_barra = c(46.1, 57.3, 50.4)
+S = matrix(c(101.3, 63.0, 71.0, 63.0, 80.2, 55.6, 71.0, 55.6, 97.4), nrow = 3, ncol=3)
+D_M = matrix(data = NA, nrow = 3, ncol = 2)
+fract = ((n-1)*(q-1))/(n-q+1)
+C_matrix = rbind(c(1,-1,0), c(1,0,-1), c(0,1,-1))
+F_q_n = qf(1-alpha, df1 = q-1,df2=n-q+1)
+
+for (i in 1:3){
+  c = C_matrix[i,]
+  CSC_N_S = sqrt((t(c)%*%S%*%c)/n)
+  
+  D_M[i,1] = t(c)%*%X_barra + sqrt(fract*F_q_n)*CSC_N_S
+  D_M[i,2] = t(c)%*%X_barra - sqrt(fract*F_q_n)*CSC_N_S
+} 
+D_M
+```
+
+
+#### 2. Observaciones sobre dos respuestas fueron coleccionadas para dos tratamientos Las observaciones vectoriales $[x 1, x 2]^{\prime}$ fueron:
+
+Tratamiento 2:
+$$Tratamiento-2:\left[\begin{array}{l}3 \\ 3\end{array}\right], \quad\left[\begin{array}{l}1 \\ 6\end{array}\right], \quad\left[\begin{array}{l}2 \\ 3\end{array}\right]$$
+
+Tratamiento 3:
+$$Tratamiento-3:\left[\begin{array}{l}2 \\ 3\end{array}\right],\left[\begin{array}{l}5 \\ 1\end{array}\right], \quad\left[\begin{array}{l}3 \\ 1\end{array}\right], \quad\left[\begin{array}{l}2 \\ 3\end{array}\right]$$
+
+
+
+#### (a) Calcule $\boldsymbol{S}_{\text {pooled }}$
+
+```{r}
+n2 = 3
+n3 = 4
+p = 2
+
+
+X2_1 <- c(3,1,2)
+X2_2 <- c(3,6,3)
+X2 = t(rbind(X2_1,X2_2))
+
+X3_1 <- c(2,5,3,2)
+X3_2 <- c(3,1,1,3)
+X3 = t(rbind(X3_1,X3_2))
+
+#Cada fila es una variable
+S2 = cov(X2)
+  
+S3 = cov(X3)
+
+Spooled = ( ((n2-1)*S2) + ((n3-1)*S3) ) / (n2+n3-2)
+```
+
+
+#### (b) Realice la prueba $H_{0}: \boldsymbol{\mu}{2}-\boldsymbol{\mu}{3}=\mathbf{0}$ usando un enfoque de dos muestras con $\alpha=.01$.
+
+
+
+```{r}
+#Ho => Mu2 = Mu3 es decir delta_0 es = 0
+alpha = 0.01
+X2_barra = rbind(mean(X2_1),mean(X2_2))
+  
+X3_barra = rbind(mean(X3_1),mean(X3_2))
+
+#Como n-p es 1 y 2 respectivamente, es decir no es grande entonces asumimos normalidad para usar Tsquared
+
+frac = (n3+n2)/(n3*n2)
+
+Tsqared = T(X2_barra-X2_barra) %*% inv(frac*Spooled) %*% (X2_barra-X2_barra)
+
+frac2 = (p*(n2+n3-2) ) / (n2+n3-p-1)
+
+f_p_n_n = qf(1-alpha, p, n2+n3-p-1)
+
+f_p_n_n_frac2 = f_p_n_n * frac2
+
+
+#Si Tsqared es mayor a 45 entonces no se acepta la prueba de hipotesis con una confianza del 99%
+
+
+```
+
+
+#### (c) Construya un intervalo de confianza simultáneo $\left(T^{2}\right)$ del $99 \%$ para las diferencias $\mu_{2 i}-\mu_{3 i}, i=1,2$
+
+```{r}
+
+```
+
+
+#### 3. Dados los datos
+
+$$
+\begin{tabular}{r|rrrrrr}
+z_{1} & 10 & 5 & 7 & 19 & 11 & 18 \\
+z_{2} & 2 & 3 & 3 & 6 & 7 & 9 \\
+\hline{y+ & 15 & 9 & 3 & 25 & 7 & 13
+\end{tabular}
+$$
+#### (a) Ajuste el modelo de regresión lineal
+
+$$
+Y_{j}=\beta_{0}+\beta_{1} z_{j 1}+\beta_{2} z_{j 2}+\varepsilon_{j}, \quad j=1,2, \ldots, 6
+$$
+
+#### (b) Determine los intervalos de confianza del $95 \%$ simultáneos (uno a la vez) para $\beta_{1} \mathrm{y} \beta_{2}$.
+
+#### (c) Comprueba la prueba de hípótesis nula de que sólo el coeficiente $\beta_{1}$ es cero.
+
+#### (d) Determine el valor esperado de la predicción $(E(Y))$ para $z_{1}=6 \mathrm{y}_{2}=$ 4. Calcule su intervalo de confianza del $95 \%$ correspondiente (el del valor esperado).
+
+#### (e) Determine el intervalo de confianza del $95 \%$ para la predicción $(Y)$ cuando $z_{1}=6 \mathrm{y} z_{2}=4$.
+
+#### 4. La librería MASS (carguela con library (MASS)) contiene el dataset de Boston, el cual registró la variable medv (valor medio de una casa) para 506 barrios en Boston. En este ejercicio, se buscará predecir la variable medv usando 13 predictores tales como: rm (número promedio de habitaciones por casa), age (promedio de la edad de las casas), y lstat (porcentaje de hogares con bajo nivel socioeconómico).
+
+#### Para este ejercicio puede usar la función lm de $\mathrm{R}$.
+
+#### (a) Realice el ajuste de regresión lineal simple usando como variable independiente lstat. Realice un resumen de los resultados (use la función summary). ¿Es la pendiente (coeficiente asociado a lstat) cero? Justifique estadísticamente su respuesta.
+
+```{r}
+library(MASS)
+data(Boston)
+modelo=lm(medv~lstat, data=Boston) 
+summary(modelo)
+```
+
+Con el resumen de los resultados que nos arrojó la función summary podemos observar que el valor del coeficiente asociado a lsat es igual a -0.95005, el cual es evidentemente diferente de cero. Por lo que esto significa que la variable independiente lsat influye en la variable dependiente mdev
+
+#### (b) Determine el intervalo de confianza del $95 \%$ para los coeficientes (use la función confint().
+
+```{r}
+confint(modelo,level=0.95)
+```
+
+
+#### (c) Realice las predicciones para el valor esperado de medv y los correspondientes intervalos de confianza del $95 \%$ para los valores de lstat=c $(5,10,15)$. Sugerencia: use predict(). Determine el intervalo de confianza para la predicción (no el valor esperado).
+
+```{r}
+prediccion = data.frame(lstat=c(5,10,15))
+predict(modelo,prediccion,interval='confidence',level=0.95)
+```
+
+
+#### (d) Grafique el diagrama de dispersion de medv y lstat y la recta de regresión (use abline).
+
+```{r}
+plot(Boston$lstat,Boston$medv,main="scatterplot")
+abline(modelo,col='red')
+```
+
+
+#### (e) Realice la regresión lineal de medv utilizando todas las variables independientes. Determine los intervalos de confianza del $95 \%$ de los coeficientes asociados a las variables independientes.
+
+```{r}
+modelo_2 = lm(medv~.,data=Boston)
+summary(modelo_2)
+```
+```{r}
+confint(modelo_2,level=0.95)
+```
+
+
+#### (f) Con el modelo anterior (e) determine el intervalo de confianza del $95 \%$ del valor esperado de medv para el valor promedio de las variables independientes. Ahora, determine el intervalo de confianza del $95 \%$ para la predicción usando el mismo vector de entrada.
+
+
+
+#### 5. Se realizan observaciones de dos respuestas sobre tres tratamientos. Los vectores de observación $\left[\begin{array}{l}x_{1} \\ x_{2}\end{array}\right]$ son:
+
+##### Tratamiento 1: 
+
+$$
+\left[\begin{array}{l}2 \\ 9\end{array}\right],\left[\begin{array}{l}3 \\ 2\end{array}\right],\left[\begin{array}{l}7 \\ 5\end{array}\right],\left[\begin{array}{l}2 \\ 1\end{array}\right],\left[\begin{array}{l}7 \\ 5\end{array}\right]
+$$
+
+##### Tratamiento 2: 
+$$
+\left[\begin{array}{l}3 \\ 2\end{array}\right], \quad\left[\begin{array}{l}2 \\ 4\end{array}\right],\left[\begin{array}{l}9 \\ 4\end{array}\right]
+$$
+
+##### Tratamiento 3: 
+
+$$
+\left[\begin{array}{l}1 \\ 4\end{array}\right],\left[\begin{array}{l}7 \\ 2\end{array}\right],\left[\begin{array}{l}4 \\ 9\end{array}\right],\left[\begin{array}{l}3 \\ 2\end{array}\right]
+$$
+
+#### (a) Construya la tabla de one-way MANOVA.
