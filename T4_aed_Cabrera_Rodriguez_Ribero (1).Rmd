@@ -124,12 +124,12 @@ frac2 = (p*(n2+n3-2) ) / (n2+n3-p-1)
 
 f_p_n_n = qf(1-alpha, p, (n2+n3-p-1))
 
-f_p_n_n_frac2 = f_p_n_n * frac2
+c_squared = f_p_n_n * frac2
 
 
 #Si Tsqared es mayor a 45 entonces no se acepta la prueba de hipótesis con una confianza del 99%
 
-if (Tsqared > f_p_n_n_frac2) {
+if (Tsqared > c_squared) {
   print("No se acepta la prueba de hipótesis con una confianza del 99%")
 } else {
  print("Se acepta la prueba de hipótesis con una confianza del 99%") 
@@ -141,6 +141,15 @@ if (Tsqared > f_p_n_n_frac2) {
 #### (c) Construya un intervalo de confianza simultáneo $\left(T^{2}\right)$ del $99 \%$ para las diferencias $\mu_{2 i}-\mu_{3 i}, i=1,2$
 
 ```{r}
+c = sqrt(c_squared)
+#Falta corregir que reciba una raiz negativa para que pueda calcular los limites o talvez haya un error en Spooled
+a = c(1,0) #Para la variable 1
+low_lim = (a %*% (X2_barra - X3_barra) ) + (c * sqrt( frac * a %*% Spooled ))
+upp_lim = (a %*% (X2_barra - X3_barra) ) - (c * sqrt( frac * a %*% Spooled ))
+ 
+a = c(0,1) #Para la variable 2
+low_lim = (a %*% (X2_barra - X3_barra) ) + (c * sqrt( (frac * a %*% Spooled) ))
+upp_lim = (a %*% (X2_barra - X3_barra) ) - (c * sqrt( frac * a %*% Spooled ))
 
 ```
 
