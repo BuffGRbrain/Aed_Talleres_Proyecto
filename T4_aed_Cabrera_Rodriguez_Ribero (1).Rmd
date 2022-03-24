@@ -97,7 +97,7 @@ S2 = cov(X2)
   
 S3 = cov(X3)
 
-Spooled = ( ((n2-1)*S2) + ((n3-1)*S3) ) / (n2+n3-2)
+Spooled =  (( ((n2-1)*S2) + ((n3-1)*S3) ) / (n2+n3-2))
 
 Spooled
 ```
@@ -144,22 +144,31 @@ if (Tsqared > c_squared) {
 c = sqrt(c_squared)
 #Falta corregir que reciba una raiz negativa para que pueda calcular los limites o talvez haya un error en Spooled
 a = c(1,0) #Para la variable 1
-low_lim = (a %*% (X2_barra - X3_barra) ) + (c * sqrt( frac * a %*% Spooled ))
-upp_lim = (a %*% (X2_barra - X3_barra) ) - (c * sqrt( frac * a %*% Spooled ))
- 
+low_lim = (t(a) %*% (X2_barra - X3_barra) ) + (c * sqrt( frac * t(a) %*% Spooled %*% a))
+upp_lim = (t(a) %*% (X2_barra - X3_barra) ) - (c * sqrt( frac * t(a) %*% Spooled %*% a))
+
+intervalo = c(low_lim,upp_lim) 
+print('Intervalo para el tratamiento 2')
+print(t(intervalo))
+
 a = c(0,1) #Para la variable 2
-low_lim = (a %*% (X2_barra - X3_barra) ) + (c * sqrt( (frac * a %*% Spooled) ))
-upp_lim = (a %*% (X2_barra - X3_barra) ) - (c * sqrt( frac * a %*% Spooled ))
+low_lim = (t(a) %*% (X2_barra - X3_barra) ) + (c * sqrt( frac * t(a) %*% Spooled %*% a))
+upp_lim = (t(a) %*% (X2_barra - X3_barra) ) - (c * sqrt( frac * t(a) %*% Spooled %*% a))
+
+intervalo = c(low_lim,upp_lim)
+
+print('Intervalo para el tratamiento 2')
+print(t(intervalo))
 
 ```
 
 
 #### 3. Dados los datos
-
+%COREEEGIR TABLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 $$
 \begin{tabular}{r|rrrrrr}
-z_{1} & 10 & 5 & 7 & 19 & 11 & 18 \\
-z_{2} & 2 & 3 & 3 & 6 & 7 & 9 \\
+z_{1} | 10 & 5 & 7 & 19 & 11 & 18 \\
+z_{2} | 2 & 3 & 3 & 6 & 7 & 9 \\
 \hline{y+ & 15 & 9 & 3 & 25 & 7 & 13
 \end{tabular}
 $$
@@ -250,3 +259,47 @@ $$
 $$
 
 #### (a) Construya la tabla de one-way MANOVA.
+
+```{r}
+#LIFEHACK DEJAR LA MATRIZ CON HUECOS(Rellenar con 0's)
+
+#XTrat_Variable
+X1_1 = c(2,3,7,2,7)
+X1_2 = c(9,2,5,1,5)
+
+X2_1 = c(3,2,9)
+X2_2 = c(2,4,4)
+
+X3_1 = c(1,7,4,3)
+X3_2 = c(4,2,9,2)
+
+#Medias de cada vec
+
+X1_1_Barra = mean(X1_1)
+X1_2_Barra = mean(X1_2)
+X2_1_Barra = mean(X2_1)
+X2_2_Barra = mean(X2_2)
+X3_1_Barra = mean(X3_1)
+X3_2_Barra = mean(X3_2)
+
+X1_mean = t(c(X1_1_Barra,X2_1_Barra,X3_1_Barra))
+X2_mean = t(c(X1_2_Barra,X2_2_Barra,X3_2_Barra))
+
+#Media total de cada variable
+X_l_1 = c(X1_1,X2_1,X3_1)
+X_l_2 = c(X1_2,X2_2,X3_2)
+
+nedia_total_1 = mean(X_l_1)
+
+
+nedia_total_2 = mean(X_l_2)
+
+
+
+```
+
+
+#### (b) Evalue el Lambda de Wilk, $\Lambda *$, y realice una prueba de hipótesis sobre los efectos de tratamientos. Sea $\alpha=.05$.
+
+#### (c) Repita la prueba considerando que la muestra es grande.
+
