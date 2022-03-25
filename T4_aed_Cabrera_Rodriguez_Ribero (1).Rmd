@@ -262,7 +262,7 @@ $$
 
 ```{r}
 #LIFEHACK DEJAR LA MATRIZ CON HUECOS(Rellenar con 0's)
-
+nl = 2 #Total de obs
 #XTrat_Variable
 X1_1 = c(2,3,7,2,7)
 X1_2 = c(9,2,5,1,5)
@@ -273,28 +273,49 @@ X2_2 = c(2,4,4)
 X3_1 = c(1,7,4,3)
 X3_2 = c(4,2,9,2)
 
-#Medias de cada vec
-
-X1_1_Barra = mean(X1_1)
-X1_2_Barra = mean(X1_2)
-X2_1_Barra = mean(X2_1)
-X2_2_Barra = mean(X2_2)
-X3_1_Barra = mean(X3_1)
-X3_2_Barra = mean(X3_2)
-
-X1_mean = t(c(X1_1_Barra,X2_1_Barra,X3_1_Barra))
-X2_mean = t(c(X1_2_Barra,X2_2_Barra,X3_2_Barra))
-
-#Media total de cada variable
+#Agrupadas por obs 1 y 2
 X_l_1 = c(X1_1,X2_1,X3_1)
 X_l_2 = c(X1_2,X2_2,X3_2)
 
-nedia_total_1 = mean(X_l_1)
+#SSOBS
+SSobs_1 = sum(X_l_1**2)
+SSobs_2 = sum(X_l_2**2)
+
+#Media total de cada variable en los 3 tratamientos
+media_total_1 = mean(X_l_1)
+media_total_2 = mean(X_l_2)
+
+ss_mean_1 = length(X_l_1) * (media_total_1**2)
+ss_mean_2 = length(X_l_2) * (media_total_2**2)
+
+#Medias de cada variable en cada tratamiento
+X1_1_Barra = mean(X1_1)
+X1_2_Barra = mean(X1_2)
+
+X2_1_Barra = mean(X2_1)
+X2_2_Barra = mean(X2_2)
+
+X3_1_Barra = mean(X3_1)
+X3_2_Barra = mean(X3_2)
 
 
-nedia_total_2 = mean(X_l_2)
+ss_treatment_1 = (length(X1_1)*((X1_1_Barra-media_total_1)**2)) + (length(X2_1)*((X2_1_Barra-media_total_1)**2)) +(length(X3_1)*((X3_1_Barra-media_total_1)**2))
 
+ss_treatment_2 = (length(X1_2)*((X1_2_Barra-media_total_2)**2)) + (length(X2_2)*((X2_1_Barra-media_total_2)**2)) +(length(X3_2)*((X3_1_Barra-media_total_2)**2))
 
+ss_res_1 = sum((X1_1-X1_1_Barra)**2)+sum((X2_1-X2_1_Barra)**2)+sum((X3_1-X3_1_Barra)**2)
+  
+ss_res_2 = sum((X1_2-X1_2_Barra)**2)+sum((X2_2-X2_2_Barra)**2)+sum((X3_2-X3_2_Barra)**2)
+
+ss_corrected_1 = ss_treatment_1 + ss_res_1
+
+ss_corrected_2 = ss_treatment_2 + ss_res_2
+
+##Para los grados de libertad
+n_1 = length(X1_1)+length(X2_1)+length(X3_1)
+n_2 = length(X1_2)+length(X2_2)+length(X3_2)
+
+g = 3 #Pues son 3 tratamientos
 
 ```
 
