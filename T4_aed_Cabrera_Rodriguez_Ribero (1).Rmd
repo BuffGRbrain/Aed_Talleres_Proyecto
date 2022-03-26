@@ -177,14 +177,89 @@ $$
 $$
 Y_{j}=\beta_{0}+\beta_{1} z_{j 1}+\beta_{2} z_{j 2}+\varepsilon_{j}, \quad j=1,2, \ldots, 6
 $$
+```{r}
+r = 2
+n = 6
+alpha = 0.05
+
+z_0 = c(1,1,1,1,1,1)
+z1 = c(10,5,7,19,11,18)
+z2 = c(2,3,3,6,7,9)
+Z = cbind(z_0,z1,z2)
+
+Y = c(15,9,3,25,7,13)
+
+B_est = solve(t(Z)%*%Z)%*%t(Z)%*%Y
+
+Y_est = Z%*%B_est
+
+E_est = Y - Y_est
+```
+
+De esta forma, el modelo queda ajustado de la siguiente forma:
+$$
+Y_{j}=2.14+1.78 z_{j 1}-2.18 z_{j 2}+\varepsilon_{j}, \quad j=1,2, \ldots, 6\\
+$$
+donde $$\varepsilon ' = (`r E_est`)$$
 
 #### (b) Determine los intervalos de confianza del $95 \%$ simultáneos (uno a la vez) para $\beta_{1} \mathrm{y} \beta_{2}$.
 
+```{r}
+#Intervalo de confianza para b1
+S_square = (t(E_est) %*%(E_est))/(n-r-1)
+S_square = S_square[1,1]
+
+SZZ = S_square*solve(t(Z)%*%Z)
+F_r_n = qf(1-alpha, df1 = r+1, df2=n-r-1)
+
+lw_lm_b1 = B_est[2] - sqrt(SZZ[2,2]) * sqrt((r+1)*F_r_n)
+upp_lm_b1 = B_est[2] + sqrt(SZZ[2,2]) * sqrt((r+1)*F_r_n)
+
+#Intervalo de confianza para b2
+S_square = (t(E_est) %*%(E_est))/(n-r-1)
+S_square = S_square[1,1]
+
+SZZ = S_square*solve(t(Z)%*%Z)
+F_r_n = qf(1-alpha, df1 = r+1, df2=n-r-1)
+
+lw_lm_b2 = B_est[3] - sqrt(SZZ[3,3]) * sqrt((r+1)*F_r_n)
+upp_lm_b2 = B_est[3] + sqrt(SZZ[3,3]) *sqrt((r+1)*F_r_n)
+```
+
+De esta forma, se tiene que el intervalo de confianza simultáneo del 95% para $\beta_{1} = [-0.84, 4.41]$, y para $\beta_0 = [-7.13, 3.26]$. Una de las razones de la amplitud de estos intervalos puede ser que $n$ es muy pequeño.
+
 #### (c) Comprueba la prueba de hípótesis nula de que sólo el coeficiente $\beta_{1}$ es cero.
+
+```{r}
+reg = lm(Y~z1+z2)
+summary(reg)
+```
+Hay varias cosas por analizar de este modelo. La primera es que el valor-p es mayor a 0.05, por tanto, no se rechaza $H_0$, es decir, los coeficientes son igual a 0 con un 95% de confianza. Por otro lado, en el modelo también se puede observar que el valor-p para $\beta_1 < \alpha$ en la prueba invidual, por tanto, se podría concluir que $\beta_1$ sí es significativo para el modelo, es decir, $\beta_1 \neq 0$. Esta contradicción puede deberse que $n$ es muy pequeño.
 
 #### (d) Determine el valor esperado de la predicción $(E(Y))$ para $z_{1}=6 \mathrm{y}_{2}=$ 4. Calcule su intervalo de confianza del $95 \%$ correspondiente (el del valor esperado).
 
+```{r}
+z0 = c(1, 6, 4)
+EV_Y = t(z0)%*%B_est # Valor esperado
+
+tstudent = qt((1-alpha/2),df = n-r-1 )
+S_square_ph = (t(Y-Z%*%B_est)%*%(Y-Z%*%B_est))/(n-r-1)
+S_square_ph = S_square_ph[1,1]
+
+#Intervalo de confianza del valor esperado
+EV_lw_lm = t(z0)%*%B_est - tstudent*sqrt((t(z0)%*%solve(t(Z)%*%Z)%*%z0)%*%S_square_ph)
+EV_upp_lm = t(z0)%*%B_est + tstudent*sqrt((t(z0)%*%solve(t(Z)%*%Z)%*%z0)%*%S_square_ph)
+```
+El valor esperado de la predicción es `r EV_Y`. Y el intervalo de confianza del 95% para el valor esperado es $[-4.70, 12.88]$.
+
 #### (e) Determine el intervalo de confianza del $95 \%$ para la predicción $(Y)$ cuando $z_{1}=6 \mathrm{y} z_{2}=4$.
+
+```{r}
+#Limites para Y
+Y_lw_lm = t(z0)%*%B_est - tstudent*sqrt(S_square_ph%*%(1+t(z0)%*%solve(t(Z)%*%Z)%*%z0))
+Y_upp_lm = t(z0)%*%B_est + tstudent*sqrt(S_square_ph%*%(1+t(z0)%*%solve(t(Z)%*%Z)%*%z0))
+```
+El intervalo de confianza para Y es $[-11.96, 20.13]$.
 
 #### 4. La librería MASS (carguela con library (MASS)) contiene el dataset de Boston, el cual registró la variable medv (valor medio de una casa) para 506 barrios en Boston. En este ejercicio, se buscará predecir la variable medv usando 13 predictores tales como: rm (número promedio de habitaciones por casa), age (promedio de la edad de las casas), y lstat (porcentaje de hogares con bajo nivel socioeconómico).
 
