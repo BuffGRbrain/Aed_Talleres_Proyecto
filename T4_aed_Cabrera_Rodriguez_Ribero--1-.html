@@ -398,7 +398,7 @@ F_r_n = qf(1-alpha, df1 = r+1, df2=n-r-1)
 
 lw_lm_b2 = B_est[3] - sqrt(SZZ[3,3]) * sqrt((r+1)*F_r_n)
 upp_lm_b2 = B_est[3] + sqrt(SZZ[3,3]) *sqrt((r+1)*F_r_n)</code></pre>
-<p>De esta forma, se tiene que el intervalo de confianza simultáneo del 95% para <span class="math inline">\(\beta_{1} = [-0.84, 4.41]\)</span>, y para <span class="math inline">\(\beta_0 = [-7.13, 3.26]\)</span>. Una de las razones de la amplitud de estos intervalos puede ser que <span class="math inline">\(n\)</span> es muy pequeño.</p>
+<p>De esta forma, se tiene que el intervalo de confianza simultáneo del 95% para <span class="math inline">\(\beta_{1} = [-0.84, 4.41]\)</span>, y para <span class="math inline">\(\beta_2 = [-7.13, 3.26]\)</span>. Una de las razones de la amplitud de estos intervalos puede ser que <span class="math inline">\(n\)</span> es muy pequeño.</p>
 </div>
 <div id="c-comprueba-la-prueba-de-hípótesis-nula-de-que-sólo-el-coeficiente-beta_1-es-cero." class="section level4">
 <h4>(c) Comprueba la prueba de hípótesis nula de que sólo el coeficiente <span class="math inline">\(\beta_{1}\)</span> es cero.</h4>
@@ -680,13 +680,38 @@ for (t in 1:n_1){
 }
 
 Total_total = B+W</code></pre>
-<p>Hola hola 75.6666667, 1.8333333, 1.8333333, 76.9166667</p>
 </div>
 <div id="b-evalue-el-lambda-de-wilk-lambda-y-realice-una-prueba-de-hipótesis-sobre-los-efectos-de-tratamientos.-sea-alpha.05." class="section level4">
 <h4>(b) Evalue el Lambda de Wilk, <span class="math inline">\(\Lambda *\)</span>, y realice una prueba de hipótesis sobre los efectos de tratamientos. Sea <span class="math inline">\(\alpha=.05\)</span>.</h4>
+<pre class="r"><code>alpha = 0.05
+Lamba_w = (det(W)/det(Total_total))
+
+#Para hacer el test de la prueba de hipótesis, nos referimos a la table 6.3 del libro para el caso p = 2 y g = 3
+
+PH = ((1-sqrt(Lamba_w))/(sqrt(Lamba_w)))*((n_1-g-1)/(g-1))
+
+F_punto_5 = qf(1-alpha, df1 = 2*(g-1),df2=2*(n_1-g-1))
+
+if (PH&gt;F_punto_5){
+print(&quot;Rechazamos H0, concluimos que hay efecto de los tratamientos&quot;)
+}else{print(&quot;No rechamos H0, concluimos que no hay efecto de los tratamientos.&quot;)}</code></pre>
+<pre><code>## [1] &quot;No rechamos H0, concluimos que no hay efecto de los tratamientos.&quot;</code></pre>
 </div>
 <div id="c-repita-la-prueba-considerando-que-la-muestra-es-grande." class="section level4">
 <h4>(c) Repita la prueba considerando que la muestra es grande.</h4>
+<pre class="r"><code>alpha = 0.05
+n_grande = 100
+Lamba_w = (det(W)/det(Total_total))
+
+#Para hacer el test de la prueba de hipótesis, nos referimos a la table 6.3 del libro para el caso p = 2 y g = 3
+
+PH_grande = -(n_grande-1-((p+g)/2))*log(Lamba_w)
+chi_s = qchisq(1-alpha, p*(g-1))
+
+if (PH_grande&gt;chi_s){
+print(&quot;Rechazamos H0, concluimos que hay efecto de los tratamientos&quot;)
+}else{print(&quot;No rechamos H0, concluimos que no hay efecto de los tratamientos.&quot;)}</code></pre>
+<pre><code>## [1] &quot;No rechamos H0, concluimos que no hay efecto de los tratamientos.&quot;</code></pre>
 </div>
 
 

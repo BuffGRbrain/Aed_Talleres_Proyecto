@@ -226,7 +226,7 @@ lw_lm_b2 = B_est[3] - sqrt(SZZ[3,3]) * sqrt((r+1)*F_r_n)
 upp_lm_b2 = B_est[3] + sqrt(SZZ[3,3]) *sqrt((r+1)*F_r_n)
 ```
 
-De esta forma, se tiene que el intervalo de confianza simultáneo del 95% para $\beta_{1} = [-0.84, 4.41]$, y para $\beta_0 = [-7.13, 3.26]$. Una de las razones de la amplitud de estos intervalos puede ser que $n$ es muy pequeño.
+De esta forma, se tiene que el intervalo de confianza simultáneo del 95% para $\beta_{1} = [-0.84, 4.41]$, y para $\beta_2 = [-7.13, 3.26]$. Una de las razones de la amplitud de estos intervalos puede ser que $n$ es muy pequeño.
 
 #### (c) Comprueba la prueba de hípótesis nula de que sólo el coeficiente $\beta_{1}$ es cero.
 
@@ -445,5 +445,35 @@ Total_total = B+W
 
 #### (b) Evalue el Lambda de Wilk, $\Lambda *$, y realice una prueba de hipótesis sobre los efectos de tratamientos. Sea $\alpha=.05$.
 
+```{r}
+alpha = 0.05
+Lamba_w = (det(W)/det(Total_total))
+
+#Para hacer el test de la prueba de hipótesis, nos referimos a la table 6.3 del libro para el caso p = 2 y g = 3
+
+PH = ((1-sqrt(Lamba_w))/(sqrt(Lamba_w)))*((n_1-g-1)/(g-1))
+
+F_punto_5 = qf(1-alpha, df1 = 2*(g-1),df2=2*(n_1-g-1))
+
+if (PH>F_punto_5){
+print("Rechazamos H0, concluimos que hay efecto de los tratamientos")
+}else{print("No rechamos H0, concluimos que no hay efecto de los tratamientos.")}
+```
+
+
 #### (c) Repita la prueba considerando que la muestra es grande.
 
+```{r}
+alpha = 0.05
+n_grande = 100
+Lamba_w = (det(W)/det(Total_total))
+
+#Para hacer el test de la prueba de hipótesis, nos referimos a la table 6.3 del libro para el caso p = 2 y g = 3
+
+PH_grande = -(n_grande-1-((p+g)/2))*log(Lamba_w)
+chi_s = qchisq(1-alpha, p*(g-1))
+
+if (PH_grande>chi_s){
+print("Rechazamos H0, concluimos que hay efecto de los tratamientos")
+}else{print("No rechamos H0, concluimos que no hay efecto de los tratamientos.")}
+```
