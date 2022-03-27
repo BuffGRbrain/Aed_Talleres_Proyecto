@@ -578,7 +578,9 @@ summary(modelo_2)</code></pre>
 <div id="a-construya-la-tabla-de-one-way-manova." class="section level4">
 <h4>(a) Construya la tabla de one-way MANOVA.</h4>
 <pre class="r"><code>#LIFEHACK DEJAR LA MATRIZ CON HUECOS(Rellenar con 0&#39;s)
-nl = 2 #Total de obs
+#nl = 2 #Total de obs
+g = 3 #Pues son 3 tratamientos
+l = 2 #Pues son 2 variables
 #XTrat_Variable
 X1_1 = c(2,3,7,2,7)
 X1_2 = c(9,2,5,1,5)
@@ -589,11 +591,17 @@ X2_2 = c(2,4,4)
 X3_1 = c(1,7,4,3)
 X3_2 = c(4,2,9,2)
 
-#Agrupadas por obs 1 y 2
+#Vector con las n de cada tratamiento
+n_l = c(length(X1_1), length(X2_1), length(X3_1))
+
+#Agrupadas por variables 1 y 2
 X_l_1 = c(X1_1,X2_1,X3_1)
 X_l_2 = c(X1_2,X2_2,X3_2)
 
-#SSOBS
+Matriz_obs = cbind(X_l_1, X_l_2)
+#SSOBS para cada variable
+# la suma de los cuadrados 
+#de cada observación de una variable
 SSobs_1 = sum(X_l_1**2)
 SSobs_2 = sum(X_l_2**2)
 
@@ -614,24 +622,65 @@ X2_2_Barra = mean(X2_2)
 X3_1_Barra = mean(X3_1)
 X3_2_Barra = mean(X3_2)
 
+#vector con promedios de variable 1 para cada tratamiento
+X_barras_1 = c(X1_1_Barra, X2_1_Barra, X3_1_Barra)
+#vector con promedios de variable 2 para cada tratamiento
+X_barras_2 = c(X1_2_Barra, X2_2_Barra, X3_2_Barra)
 
+
+####Construyendo las matrices X_l y X_barra_total para cada variable
+
+#Construimos las matrices X_l y X_barra_l para la primera variable
+x_l_1 = c(X1_1_Barra, X1_2_Barra)
+x_l_2 = c(X2_1_Barra, X2_2_Barra)
+x_l_3 = c(X3_1_Barra, X3_2_Barra)
+
+X_barra_total = c(media_total_1, media_total_2)
+
+#SS treatment effect para varibale 1
 ss_treatment_1 = (length(X1_1)*((X1_1_Barra-media_total_1)**2)) + (length(X2_1)*((X2_1_Barra-media_total_1)**2)) +(length(X3_1)*((X3_1_Barra-media_total_1)**2))
 
+#SS treatment effect para varibale 2
 ss_treatment_2 = (length(X1_2)*((X1_2_Barra-media_total_2)**2)) + (length(X2_2)*((X2_1_Barra-media_total_2)**2)) +(length(X3_2)*((X3_1_Barra-media_total_2)**2))
 
+#SS residual para varibale 1
 ss_res_1 = sum((X1_1-X1_1_Barra)**2)+sum((X2_1-X2_1_Barra)**2)+sum((X3_1-X3_1_Barra)**2)
-  
+
+#SS residual para varibale 2
 ss_res_2 = sum((X1_2-X1_2_Barra)**2)+sum((X2_2-X2_2_Barra)**2)+sum((X3_2-X3_2_Barra)**2)
 
+#Total SS corrected para variable 1
 ss_corrected_1 = ss_treatment_1 + ss_res_1
 
+#Total SS corrected para variable 2
 ss_corrected_2 = ss_treatment_2 + ss_res_2
 
 ##Para los grados de libertad
-n_1 = length(X1_1)+length(X2_1)+length(X3_1)
-n_2 = length(X1_2)+length(X2_2)+length(X3_2)
+n_1 = n_2 = length(X1_1)+length(X2_1)+length(X3_1)
 
-g = 3 #Pues son 3 tratamientos</code></pre>
+#Creando la matriz B y W
+B = n_l[1]*(x_l_1-X_barra_total)%*%t(x_l_1-X_barra_total) + n_l[2]*(x_l_2-X_barra_total)%*%t(x_l_2-X_barra_total) + n_l[3]*(x_l_3-X_barra_total)%*%t(x_l_3-X_barra_total)
+
+#Construyendo W
+W = matrix(data = 0, nrow = 2, ncol = 2)
+
+c = 0
+x_l_b_t = x_l_1
+for (t in 1:n_1){
+  c = c +1
+  W = W + ((Matriz_obs[t,] - x_l_b_t)%*%t(Matriz_obs[t,] - x_l_b_t))
+  if (c == 5){
+    x_l_b_t = x_l_2
+  }
+  
+  if (c == 8){
+    x_l_b_t = x_l_3
+  }
+
+}
+
+Total_total = B+W</code></pre>
+<p>Hola hola 75.6666667, 1.8333333, 1.8333333, 76.9166667</p>
 </div>
 <div id="b-evalue-el-lambda-de-wilk-lambda-y-realice-una-prueba-de-hipótesis-sobre-los-efectos-de-tratamientos.-sea-alpha.05." class="section level4">
 <h4>(b) Evalue el Lambda de Wilk, <span class="math inline">\(\Lambda *\)</span>, y realice una prueba de hipótesis sobre los efectos de tratamientos. Sea <span class="math inline">\(\alpha=.05\)</span>.</h4>
