@@ -164,14 +164,14 @@ print(t(intervalo))
 
 
 #### 3. Dados los datos
-%COREEEGIR TABLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 $$
-\begin{tabular}{r|rrrrrr}
-z_{1} | 10 & 5 & 7 & 19 & 11 & 18 \\
-z_{2} | 2 & 3 & 3 & 6 & 7 & 9 \\
-\hline{y+ & 15 & 9 & 3 & 25 & 7 & 13
-\end{tabular}
+\begin{array}{l|rrrrrr}
+z_{1} & 10 & 5 & 7 & 19 & 11 & 18 \\
+z_{2} & 2 & 3 & 3 & 6 & 7 & 9 \\
+\hline y & 15 & 9 & 3 & 25 & 7 & 13
+\end{array}
 $$
+
 #### (a) Ajuste el modelo de regresión lineal
 
 $$
@@ -312,6 +312,21 @@ confint(modelo_2,level=0.95)
 
 #### (f) Con el modelo anterior (e) determine el intervalo de confianza del $95 \%$ del valor esperado de medv para el valor promedio de las variables independientes. Ahora, determine el intervalo de confianza del $95 \%$ para la predicción usando el mismo vector de entrada.
 
+```{r}
+Modelo2_limpio <- lm(medv ~ ( crim + zn + chas + nox + rm + dis + rad + tax + ptratio + black +lstat), data = Boston)
+summary(Modelo2_limpio)
+```
+
+```{r}
+X <- as.matrix(Boston[,colnames(Boston)!="medv"])
+X_bar <-(1/dim(X)[1])*t( X )%*% matrix( 1, dim( X )[1],1)
+X_bar
+```
+
+```{r}
+predict(Modelo2_limpio, data.frame(t( X_bar ) ), interval="confidence")
+predict(Modelo2_limpio, data.frame( t( X_bar ) ), interval="prediction")
+```
 
 
 #### 5. Se realizan observaciones de dos respuestas sobre tres tratamientos. Los vectores de observación $\left[\begin{array}{l}x_{1} \\ x_{2}\end{array}\right]$ son:
@@ -439,8 +454,20 @@ for (t in 1:n_1){
 }
 
 Total_total = B+W
+
+B
+W
+B+W
 ```
 
+$$
+\begin{array}{cccc}
+\text { Source of variation } & \text { Matrix of SS and CP}& \text { d.f. } \\
+\text { Treatment } & B & 3-1\\
+\hline \text { Residual } & W & 12-3\\
+\hline \text { Total (corrected for the mean) } & B+W & 12-1\\
+\end{array}
+$$
 
 
 #### (b) Evalue el Lambda de Wilk, $\Lambda *$, y realice una prueba de hipótesis sobre los efectos de tratamientos. Sea $\alpha=.05$.
@@ -448,7 +475,7 @@ Total_total = B+W
 ```{r}
 alpha = 0.05
 Lamba_w = (det(W)/det(Total_total))
-
+Lamba_w
 #Para hacer el test de la prueba de hipótesis, nos referimos a la table 6.3 del libro para el caso p = 2 y g = 3
 
 PH = ((1-sqrt(Lamba_w))/(sqrt(Lamba_w)))*((n_1-g-1)/(g-1))
