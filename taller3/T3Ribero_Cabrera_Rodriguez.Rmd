@@ -1,0 +1,464 @@
+---
+title: "T3_aed"
+author: "Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero"
+date: "25/2/2022"
+output: html_document
+---
+
+#### 1. Find the maximum likelihood estimates of the $2 \times 1$ mean vector $\mu$ and the $2 \times 2$ covariance matrix $\Sigma$ based on the random sample
+$$
+\mathbf{X}=\left[\begin{array}{ll}
+3 & 6 \\
+4 & 4 \\
+5 & 7 \\
+4 & 7
+\end{array}\right]
+$$
+from a bivariate normal population.
+```{r}
+
+x1 = c(3,4,5,4)
+x2 = c(6,4,7,7)
+
+X = cbind(x1, x2)
+n = length(x1)
+
+X_barra = c(mean(x1), mean(x2))
+
+Z = cov(X)*((n-1)/n)
+```
+
+##### Solución punto 1
+
+- Estimador para $\mu$ es:
+
+```{r}
+print(X_barra)
+```
+ 
+- Estimador para $\Sigma$ es 
+
+```{r}
+print(Z)
+```
+
+
+#### 2. Using the data
+$$
+\mathbf{X}=\left[\begin{array}{cc}
+2 & 12 \\
+8 & 9 \\
+6 & 9 \\
+8 & 10
+\end{array}\right]
+$$
+
+##### (a) Evaluate $T^{2}$, for testing $H_{0}: \mu^{\prime}=[7, \quad 11]$, using the data
+
+```{r}
+x1 = c(2,8,6,8)
+x2 = c(12,9,9,10)
+n = length(x1)
+X= cbind(x1, x2)
+
+X_mu_0 = c(7,11)
+
+X_barra = c(mean(x1), mean(x2))
+
+Z = cov(X)
+
+Z_inv = solve(Z)
+
+T_square = n * (X_barra- X_mu_0)%*%(Z_inv)%*%(X_barra- X_mu_0)
+```
+
+
+El valor de $T^2$ es:
+
+```{r}
+print(T_square)
+```
+
+##### (b) Specify the distribution of $T^{2}$ for the situation in (a).
+
+La distribución de $T^{2}$ es:
+
+$$
+\frac{(4-1) \cdot 3}{4-1} \cdot F_{2,2} = 3 \cdot F_{2,2}
+$$
+
+##### (c) Using (a) and (b), test $H_{0}$ at the $\alpha=.05$ level. What conclusion do you reach?
+
+Evaluando $\alpha=.05$ en $a$ tenemos: 
+
+```{r}
+p = 0.95
+F_2_2 = qf(p, 2,2)
+
+distribution = 3 * F_2_2
+```
+
+Dado que $3 \cdot F_{2,2} = 56.999$, y 57 no es menor que 13.6, con un 0.95 de confianza, no rechazamos $H_{0}$.
+
+##### (d) Determine $\Lambda$
+
+```{r}
+x1 = c(2,8,6,8)
+x2 = c(12,9,9,10)
+n = length(x1)
+X= cbind(x1, x2)
+
+X_mu_0 = c(7,11)
+
+X_mu_og = c(6,10)
+matriz_mu_og = rbind(X_mu_og,X_mu_og,X_mu_og,X_mu_og)
+
+#sigma_gorro = ((n-1)/n)*cov(X)
+sigma_gorro_0 = matrix(data = c(0,0,0,0), nrow = 2, ncol = 2)
+
+matriz_mu_0 = rbind(X_mu_0,X_mu_0,X_mu_0,X_mu_0)
+
+sigma_gorro_0 = t(X - matriz_mu_0) %*% ((X - matriz_mu_0))  
+
+sigma_gorro = t(X - matriz_mu_og) %*% ((X - matriz_mu_og))  
+
+lambda = (det(sigma_gorro)/det(sigma_gorro_0))^2
+lambda
+```
+
+
+
+
+##### (e) Using the Wilk's Lambda (d), calculate $T^{2}$
+
+Despejando lo visto en clase tenemos:
+
+$$
+T^2 = (\Lambda^{\frac{-2}{n}} - 1 ) \cdot (n-1)
+$$
+
+Reemplazando lo encontrado en los puntos anteriores: 
+
+```{r}
+
+Tcuad = (lambda^(-2/n) -1 )*(n-1)
+print(Tcuad)
+```
+
+#### 3. Harry Roberts, a naturalist for the Alaska Fish and Game department, studies grizzly bears with the goal of maintaining a healthy population. Measurements on $n=61$ bears provided the following summary statistics:
+
+$$
+\begin{array}{l|cccccc}
+\text { Variable } & \text { Weight }(\mathrm{kg}) & \text { Body length }(\mathrm{cm}) & \text { Neck } & \text { Girth } & \text { Head length } & \text { Head width } \\
+\hline \text { Sample } & & & & & & \\
+\text { mean } \bar{x} & 95.52 & 164.38 & 55.69 & 93.39 & 17.98 & 31.13
+\end{array}
+$$
+
+```{r}
+alpha = 0.05 #esto porque nos piden 95% de confianza
+p = 6
+n = 61
+
+X_barra = c(95.52, 164.38, 55.69, 93.39, 17.98, 31.13)
+
+c1 = c(3266.46, 1343.97, 731.54, 1175.5,162.68,238.37)
+c2 = c(1343.97,721.91,324.25,537.35,80.17,117.73)
+c3 = c(731.54,324.25,179.28,281.17,39.15,56.80)
+c4 = c(1175.50,537.35,281.17,474.98,63.73,94.85)
+c5 = c(162.68,80.17,39.15,63.73,9.95,13.88)
+c6 = c(238.37,117.73,56.80,94.85,13.88,21.26)
+S = cbind(c1,c2,c3,c4,c5,c6)
+S
+```
+
+    
+##### (a) Obtain the large sample $95 \%$ simultaneous confidence intervals for the six population mean body measurements.
+
+```{r}
+#Vector de cancelación para variable 1
+a = c(1,0,0,0,0,0)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = (p*(n-1))/(n*(n-p))
+
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+F_p_n = qf(1-alpha, p, n-p)
+
+lw_lm = a_t_X_b - sqrt(fract*F_p_n*asa)
+
+up_lm = a_t_X_b + sqrt(fract*F_p_n*asa)
+
+weight_IC = c(lw_lm, up_lm)
+
+#Vector de cancelación para variable 2
+a = c(0,1,0,0,0,0)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = (p*(n-1))/(n*(n-p))
+
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+F_p_n = qf(1-alpha, p, n-p)
+
+lw_lm = a_t_X_b - sqrt(fract*F_p_n*asa)
+
+up_lm = a_t_X_b + sqrt(fract*F_p_n*asa)
+
+B_len_IC = c(lw_lm, up_lm)
+
+#Vector de cancelación para variable 3
+a = c(0,0,1,0,0,0)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = (p*(n-1))/(n*(n-p))
+
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+F_p_n = qf(1-alpha, p, n-p)
+
+lw_lm = a_t_X_b - sqrt(fract*F_p_n*asa)
+
+up_lm = a_t_X_b + sqrt(fract*F_p_n*asa)
+
+neck_IC = c(lw_lm, up_lm)
+
+#Vector de cancelación para variable 4
+a = c(0,0,0,1,0,0)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = (p*(n-1))/(n*(n-p))
+
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+F_p_n = qf(1-alpha, p, n-p)
+
+lw_lm = a_t_X_b - sqrt(fract*F_p_n*asa)
+
+up_lm = a_t_X_b + sqrt(fract*F_p_n*asa)
+
+girth_IC = c(lw_lm, up_lm)
+
+#Vector de cancelación para variable 5
+a = c(0,0,0,0,1,0)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = (p*(n-1))/(n*(n-p))
+
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+F_p_n = qf(1-alpha, p, n-p)
+
+lw_lm = a_t_X_b - sqrt(fract*F_p_n*asa)
+
+up_lm = a_t_X_b + sqrt(fract*F_p_n*asa)
+
+H_len_IC = c(lw_lm, up_lm)
+
+#Vector de cancelación para variable 6
+a = c(0,0,0,0,0,1)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = (p*(n-1))/(n*(n-p))
+
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+F_p_n = qf(1-alpha, p, n-p)
+
+lw_lm = a_t_X_b - sqrt(fract*F_p_n*asa)
+
+up_lm = a_t_X_b + sqrt(fract*F_p_n*asa)
+
+H_width_IC = c(lw_lm, up_lm)
+```
+
+###### Solución 3a
+
+####### IC simultáneospara las 6 variables dadas con una confianza del 95%. (Están en el orden dado: Weight, Body Length, Neck, Grith, Head Lengyh, Head Width)
+
+```{r}
+IC_simult = rbind(weight_IC, neck_IC, girth_IC, H_len_IC, H_width_IC)
+```
+
+
+##### (b) Obtain the large sample $95 \%$ confidence ellipse for mean weight and mean girth.
+
+```{r}
+library(plotrix)
+X_barra_mini = c(X_barra[1], X_barra[4])
+
+S_mini = matrix(c(S[1,1], S[1,4], S[4,1], S[4,4]), ncol = 2, nrow = 2)
+S_mini_data = eigen(S_mini)
+
+lambda1 = S_mini_data$values[1]
+lambda2 = S_mini_data$values[2]
+
+e1 = S_mini_data$vectors[,1]
+e2 = S_mini_data$vectors[,2]
+
+eje_1 = X_barra_mini + sqrt(lambda1)*sqrt(fract*F_p_n)*e1
+eje_2 = X_barra_mini - sqrt(lambda1)*sqrt(fract*F_p_n)*e1
+eje_3 = X_barra_mini + sqrt(lambda2)*sqrt(fract*F_p_n)*e2
+eje_4 = X_barra_mini - sqrt(lambda2)*sqrt(fract*F_p_n)*e2
+
+#install.packages('plotrix')
+
+angle <- atan(eigen(S_mini)$vectors[2,1]/eigen(S_mini)$vectors[1,1])
+plot(0,pch='',ylab='',xlab='',xlim=c(50,150),ylim=c(70,120))
+axis1 <- sqrt(eigen(S_mini)$values[1])*
+sqrt(
+(p*(n-1))/
+(n*(n-p))* # no es el mismo valor critico que antes
+qf(1-alpha,p,n-p)) 
+
+axis2 <- sqrt(eigen(S_mini)$values[2])*
+sqrt((p*(n-1))/(n*(n-p))*qf(1-alpha,p,n-p))
+lengths <- c(axis1,axis2)
+draw.ellipse(x=X_barra_mini[1],y=X_barra_mini[2],a=lengths[1],b=lengths[2],angle=angle,deg=FALSE)
+```
+
+##### (c) Obtain the $95 \%$ Bonferroni confidence intervals for the six means in Part a.
+
+```{r}
+#Vector de cancelación para variable 1
+alpha = 0.05
+p = 6
+a = c(1,0,0,0,0,0)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = sqrt(asa/n)
+  
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+tstudent = qt((1-alpha/(2*p)),df = n-1 )
+
+lw_lm = a_t_X_b - tstudent*fract
+
+up_lm = a_t_X_b + tstudent*fract
+
+weight_IC_c = c(lw_lm, up_lm)
+
+#Vector de cancelación para variable 2
+alpha = 0.05
+p = 6
+a = c(0,1,0,0,0,0)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = sqrt(asa/n)
+  
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+tstudent = qt((1-alpha/(2*p)),df = n-1 )
+
+lw_lm = a_t_X_b - tstudent*fract
+
+up_lm = a_t_X_b + tstudent*fract
+
+B_len_IC_c = c(lw_lm, up_lm)
+
+#Vector de cancelación para variable 3
+alpha = 0.05
+p = 6
+a = c(0,0,1,0,0,0)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = sqrt(asa/n)
+  
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+tstudent = qt((1-alpha/(2*p)),df = n-1 )
+
+lw_lm = a_t_X_b - tstudent*fract
+
+up_lm = a_t_X_b + tstudent*fract
+
+neck_IC_c = c(lw_lm, up_lm)
+
+#Vector de cancelación para variable 4
+alpha = 0.05
+p = 6
+a = c(0,0,0,1,0,0)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = sqrt(asa/n)
+  
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+tstudent = qt((1-alpha/(2*p)),df = n-1 )
+
+lw_lm = a_t_X_b - tstudent*fract
+
+up_lm = a_t_X_b + tstudent*fract
+
+girth_IC_c = c(lw_lm, up_lm)
+
+#Vector de cancelación para variable 5
+alpha = 0.05
+p = 6
+a = c(0,0,0,0,1,0)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = sqrt(asa/n)
+  
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+tstudent = qt((1-alpha/(2*p)),df = n-1 )
+
+lw_lm = a_t_X_b - tstudent*fract
+
+up_lm = a_t_X_b + tstudent*fract
+
+H_len_IC_c = c(lw_lm, up_lm)
+
+#Vector de cancelación para variable 6
+alpha = 0.05
+p = 6
+a = c(0,0,0,0,0,1)
+
+asa = (a%*%S%*%a)[1,1]
+
+fract = sqrt(asa/n)
+  
+a_t_X_b = (a%*%X_barra)[1,1] 
+
+tstudent = qt((1-alpha/(2*p)),df = n-1 )
+
+lw_lm = a_t_X_b - tstudent*fract
+
+up_lm = a_t_X_b + tstudent*fract
+
+H_width_IC_c = c(lw_lm, up_lm)
+```
+
+
+##### (d) Refer to Part b. Construct the $95 \%$ Bonferroni confidence rectangle for the mean weight and mean girth using $m=6$. Compare this rectangle with the confidence ellipse in Part b.
+
+```{r}
+angle <- atan(eigen(S_mini)$vectors[2,1]/eigen(S_mini)$vectors[1,1])
+plot(0,pch='',ylab='',xlab='',xlim=c(50,150),ylim=c(70,120))
+axis1 <- sqrt(eigen(S_mini)$values[1])*
+sqrt(
+(p*(n-1))/
+(n*(n-p))* # no es el mismo valor critico que antes
+qf(1-alpha,p,n-p)) 
+
+axis2 <- sqrt(eigen(S_mini)$values[2])*
+sqrt((p*(n-1))/(n*(n-p))*qf(1-alpha,p,n-p))
+lengths <- c(axis1,axis2)
+draw.ellipse(x=X_barra_mini[1],y=X_barra_mini[2],a=lengths[1],b=lengths[2],angle=angle,deg=FALSE)
+
+
+```
+

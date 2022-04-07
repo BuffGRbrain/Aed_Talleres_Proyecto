@@ -1,0 +1,4 @@
+"0","#Valor crítico"
+"0","alpha = 0.05 # Nivel de significancia"
+"0","critical.value = (k*(n-1))/(n-k)*qf(1-alpha,k,n-k)"
+"0",""

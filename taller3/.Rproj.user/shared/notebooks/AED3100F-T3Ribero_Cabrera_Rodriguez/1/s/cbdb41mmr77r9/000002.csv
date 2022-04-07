@@ -1,0 +1,2 @@
+"0","angle <- atan(eigen(S_mini)$vectors[2,1]/eigen(S_mini)$vectors[1,1])"
+"0","plot(0,pch='',ylab='',xlab='',xlim=c(50,150),ylim=c(70,120))"

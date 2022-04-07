@@ -1,0 +1,398 @@
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+clc <- function(){
+  cat("\014")
+}
+
+clc()
+
+packages = c("dslabs", "MASS", "scatterplot3d", "car")
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+```
+
+# Taller 1
+### Análisis estadístico de datos
+Juan Camilo Rodriguez  
+Rafael Cabrera Jiménez
+
+### Ejercicio 1
+Graficar los boxplots de la variable oleic vs region del dataset olive.  
+
+
+```{r}
+Boxplot(olive$oleic, olive$region, xlab = "Region", ylab = "Oleic")
+```
+
+### Ejercicio 2
+**Ejercicio 2.1**  
+Determine la media, la mediana, la moda y la desviación estándar de cada una de las variables. Se
+puede calcular a todas la variables? a cuales no? Justifique su respuesta  
+
+```{r}
+a = mtcars
+head(a)
+summary(a)
+
+#Variable mpg:
+# Media = 20.09
+# Mediana = 19.20
+# Moda = 10.4
+# Desviación estandar = 6.026948
+freq_ord=sort(table(a$mpg),decreasing = TRUE); 
+sd(a$mpg)
+
+#Variable cyl:
+# Media = 6.188
+# Mediana = 6.000
+# Moda = 8
+# Desviación estandar = 1.785922
+freq_ord=sort(table(a$cyl),decreasing = TRUE); 
+sd(a$cyl)
+
+#Variable disp:
+# Media = 230.7
+# Mediana = 196.3
+# Moda = 275.8
+# Desviación estandar = 123.9387
+freq_ord=sort(table(a$disp),decreasing = TRUE); 
+sd(a$disp)
+
+#Variable hp:
+# Media = 146.7
+# Mediana = 123.0
+# Moda = 110
+# Desviación estandar = 68.56287
+freq_ord=sort(table(a$hp),decreasing = TRUE); 
+sd(a$hp)
+
+#Variable drat:
+# Media = 3.597
+# Mediana = 3.695
+# Moda = 3.07
+# Desviación estandar = 0.5346787
+freq_ord=sort(table(a$drat),decreasing = TRUE); 
+sd(a$drat)
+
+#Variable wt:
+# Media = 3.217
+# Mediana = 3.325
+# Moda = 3.44
+# Desviación estandar = 0.9784574
+freq_ord=sort(table(a$wt),decreasing = TRUE); 
+sd(a$wt)
+
+#Variable qsec:
+# Media = 17.85
+# Mediana = 17.71
+# Moda = 17.02
+# Desviación estandar = 1.786943
+freq_ord=sort(table(a$qsec),decreasing = TRUE); 
+sd(a$qsec)
+
+
+#Variable vs: Esta variable es de Bernulli, por lo que no se le puede calcular la media ni la mediana
+# Media =
+# Mediana =
+# Moda = 0
+# Desviación estandar =
+freq_ord=sort(table(a$vs),decreasing = TRUE); 
+sd(a$vs)
+
+
+#Variable am:Esta variable es de Bernulli, por lo que no se le puede calcular la media ni la mediana
+# Media =
+# Mediana =
+# Moda = Transmision automatica (0)
+# Desviación estandar =
+freq_ord=sort(table(a$am),decreasing = TRUE); 
+sd(a$am)
+
+#Variable gear:
+# Media = 3.688
+# Mediana = 4.000
+# Moda = 3
+# Desviación estandar = 0.7378041
+freq_ord=sort(table(a$gear),decreasing = TRUE); 
+sd(a$gear)
+
+#Variable carb:
+# Media = 2.812
+# Mediana = 2.000
+# Moda = 2
+# Desviación estandar = 1.6152
+freq_ord=sort(table(a$carb),decreasing = TRUE); 
+sd(a$carb)
+
+```
+
+**Ejercicio 2.2**  
+Determinar qué variable presenta valores atípicos, ¿cómo los ha encontrado?  
+```{r}
+boxplot(a$carb)
+```  
+```{r, echo=FALSE, results='hide'}
+cat("\\linebreak")
+```
+Variables con valores atípicos: hp, wt, qsec, carb. Las hallamos usando boxplot.
+
+
+**Ejercico 2.3**  
+Hacer el histograma para cada una de las variable usando 5 intervalos. De nuevo, está gráfica es útil
+para todas las variables? justifique su respuesta.  
+```{r}
+#Histograma mpg
+hist(a$mpg, main = "Mpg", xlab = "Mpg", breaks = 5)
+#Histograma cyl
+hist(a$cyl, main = "cyl", xlab = "cyl", breaks = 5)
+
+#Histograma disp
+hist(a$disp, main = "disp", xlab = "disp", breaks = 5)
+
+#Histograma hp
+hist(a$hp, main = "hp", xlab = "hp", breaks = 5)
+
+#Histograma drat
+hist(a$drat, main = "drat", xlab = "drat", breaks = 5)
+
+#Histograma wt
+hist(a$wt, main = "wt", xlab = "wt", breaks = 5)
+
+#Histograma qsec
+hist(a$qsec, main = "qsec", xlab = "qsec", breaks = 5)
+
+#Histograma vs
+hist(a$vs, main = "vs", xlab = "vs", breaks = 5)
+
+#Histograma am
+hist(a$am, main = "am", xlab = "am", breaks = 5)
+
+#Histograma gear
+hist(a$gear, main = "gear", xlab = "gear", breaks = 5)
+
+#Histograma carb
+hist(a$carb, main = "carb", xlab = "carb", breaks = 5)
+```  
+```{r, echo=FALSE, results='hide'}
+cat("\\linebreak")
+```
+Esta gráfica no es util para las variables AM y VS porque solo tienen valores 1 y 0.
+
+**Ejercicio 2.4**  
+Realice una gráfica que incluya el diagrama de cajas de todas las variables de tal manera de que se
+puedan comparar.   
+```{r}
+# Normalizamos el vector que contiene
+# las observaciones de mpg
+vec_mpg = a$mpg
+sd_mpg = sd(vec_mpg)
+mn_mpg = mean(vec_mpg)
+mn_vec_mpg= rep(c(mn_mpg), each=length(vec_mpg))
+nor_vec_mpg = (1/sd_mpg)*(vec_mpg - mn_vec_mpg)
+#boxplot(nor_vec_mpg, main="Mpg")
+
+# Normalizamos el vector que contiene
+# las observaciones de cyl
+vec_cyl = a$cyl
+sd_cyl = sd(vec_cyl)
+mn_cyl = mean(vec_cyl)
+mn_vec_cyl= rep(c(mn_cyl), each=length(vec_cyl))
+nor_vec_cyl = (1/sd_cyl)*(vec_cyl - mn_vec_cyl)
+#boxplot(nor_vec_cyl, main="cyl")
+
+# Normalizamos el vector que contiene
+# las observaciones de disp
+vec_disp = a$disp
+sd_disp = sd(vec_disp)
+mn_disp = mean(vec_disp)
+mn_vec_disp= rep(c(mn_disp), each=length(vec_disp))
+nor_vec_disp = (1/sd_disp)*(vec_disp - mn_vec_disp)
+#boxplot(nor_vec_disp, main="disp")
+
+# Normalizamos el vector que contiene
+# las observaciones de hp
+vec_hp = a$hp
+sd_hp = sd(vec_hp)
+mn_hp = mean(vec_hp)
+mn_vec_hp= rep(c(mn_hp), each=length(vec_hp))
+nor_vec_hp = (1/sd_hp)*(vec_hp - mn_vec_hp)
+#boxplot(nor_vec_hp, main="hp")
+
+# Normalizamos el vector que contiene
+# las observaciones de drat
+vec_drat = a$drat
+sd_drat = sd(vec_drat)
+mn_drat = mean(vec_drat)
+mn_vec_drat= rep(c(mn_drat), each=length(vec_drat))
+nor_vec_drat = (1/sd_drat)*(vec_drat - mn_vec_drat)
+#boxplot(nor_vec_drat, main="drat")
+
+# Normalizamos el vector que contiene
+# las observaciones de wt
+vec_wt = a$wt
+sd_wt = sd(vec_wt)
+mn_wt = mean(vec_wt)
+mn_vec_wt= rep(c(mn_wt), each=length(vec_wt))
+nor_vec_wt = (1/sd_wt)*(vec_wt - mn_vec_wt)
+#boxplot(nor_vec_wt, main="wt")
+
+# Normalizamos el vector que contiene
+# las observaciones de qsec
+vec_qsec = a$qsec
+sd_qsec = sd(vec_qsec)
+mn_qsec = mean(vec_qsec)
+mn_vec_qsec= rep(c(mn_qsec), each=length(vec_qsec))
+nor_vec_qsec = (1/sd_qsec)*(vec_qsec - mn_vec_qsec)
+#boxplot(nor_vec_qsec, main="qsec")
+
+# Normalizamos el vector que contiene
+# las observaciones de vs
+vec_vs = a$vs
+sd_vs = sd(vec_vs)
+mn_vs = mean(vec_vs)
+mn_vec_vs= rep(c(mn_vs), each=length(vec_vs))
+nor_vec_vs = (1/sd_vs)*(vec_vs - mn_vec_vs)
+#boxplot(nor_vec_vs, main="vs")
+
+# Normalizamos el vector que contiene
+# las observaciones de am
+vec_am = a$am
+sd_am = sd(vec_am)
+mn_am = mean(vec_am)
+mn_vec_am= rep(c(mn_am), each=length(vec_am))
+nor_vec_am = (1/sd_am)*(vec_am - mn_vec_am)
+#boxplot(nor_vec_am, main="am")
+
+# Normalizamos el vector que contiene
+# las observaciones de gear
+vec_gear = a$gear
+sd_gear = sd(vec_gear)
+mn_gear = mean(vec_gear)
+mn_vec_gear= rep(c(mn_gear), each=length(vec_gear))
+nor_vec_gear = (1/sd_gear)*(vec_gear - mn_vec_gear)
+#boxplot(nor_vec_gear, main="gear")
+
+# Normalizamos el vector que contiene
+# las observaciones de carb
+vec_carb = a$carb
+sd_carb = sd(vec_carb)
+mn_carb = mean(vec_carb)
+mn_vec_carb= rep(c(mn_carb), each=length(vec_carb))
+nor_vec_carb = (1/sd_carb)*(vec_carb - mn_vec_carb)
+#boxplot(nor_vec_carb, main="carb")
+
+#Juntamos todos
+cols = c("Mpg", "Cyl", "Disp", "Hp", "Drat", "Wt", "Qsec", "VS", "Am", "Gear", "Carb")
+boxplot(nor_vec_mpg, nor_vec_cyl, nor_vec_disp, nor_vec_hp, nor_vec_drat, nor_vec_wt,nor_vec_qsec, nor_vec_vs, nor_vec_am, nor_vec_gear, nor_vec_carb, names = cols)
+
+```
+
+
+### Ejercicio 3  
+Graficar una matrix de dispersion de tres variables del dataset olive, con la diagonal mostrando boxplots
+de las variables.  
+```{r}
+olive_acids <- subset(olive, select = c(-region, -area, -oleic, -linoleic, -linolenic, -arachidic, -eicosenoic))
+scatterplotMatrix(~ +., data = olive_acids, diagonal=list(method ="boxplot"))
+
+```
+
+### Ejercicio 4  
+Graficar un diagrama de dispersión en 3D, de tres variables numéricas del dataset olive graficando en
+colores diferentes las regiones.  
+
+```{r}
+colors <- c("#924e7d", "#E69F00", "#56B4E9")
+colors <- colors[as.numeric(olive$region)]
+scatterplot3d(olive$palmitic,olive$palmitoleic,olive$stearic,pch = 16, color=colors,
+              xlab="palmitic", ylab="palmitoleic", zlab="stearic")
+
+```
+
+### Ejercicio 5  
+```{r}
+x1 = c(-6, -3, -2, 1, 2, 5, 6, 8)
+x2 = c(-2, -3, 1, -1, 2, 1, 5, 3)
+```  
+**Ejercicio 5.a**  
+Grafique los datos como un diagrama de dispersión y calcule s11, s22 y s12.  
+```{r}
+plot(x1, x2, xlab = "x1", ylab = "x2")
+s11 = (1/length(x1))*sum((x1-mean(x1))^2)
+s11
+s22 = (1/length(x2))*sum((x2-mean(x2))^2)
+s22
+s12 = (1/length(x1))*sum((x1-mean(x1))*(x2-mean(x2)))
+s12
+```  
+**Ejercicio 5.b**  
+Usando x˜1 = x1 cos(θ) + x2 sin(θ) y x˜2 = −x1 sin(θ) + x2 cos(θ), calcule las medidas correspondientes
+sobre las variables xe1 y xe2, asumiendo que los ejes coordenados originales están rotados un ángulo de
+θ = 26 grados.  
+```{r}
+cos_26 = cos(pi*26/180)
+sin_26 = sin(pi*26/180)
+x1_barra = x1*cos_26 + x2*sin_26
+x1_barra
+x2_barra = -1*x1*sin_26 + x2*cos_26
+x2_barra
+summary(x1_barra)
+summary(x2_barra)
+
+```
+
+**Ejercicio 5.c**  
+Usando las medidas x˜1 y x˜2 de (b), calcule las varianzas de muestra se11 y se22  
+```{r}
+s11_barra = (1/length(x1_barra))*sum((x1_barra-mean(x1_barra))^2)
+s11_barra
+s22_barra = (1/length(x2_barra))*sum((x2_barra-mean(x2_barra))^2)
+s22_barra
+
+```
+
+**Ejercicio 5.d**  
+```{r}
+x1_5 = 4
+x2_5 = -2
+
+x1_5_barra = x1_5*cos_26+x2_5*sin_26
+x2_5_barra = -x1_5*sin_26+x2_5*cos_26
+
+d = sqrt(((x1_5_barra)^2/s11_barra)+((x2_5_barra)^2/s22_barra))
+d
+```  
+
+**Ejercicio 5.e**
+```{r}
+a11 = ((cos_26^2) / ((cos_26^2*s11)+(2*sin_26*cos_26*s12)+(sin_26^2*s22))) + ((sin_26^2)/((cos_26^2)*s22-2*sin_26*cos_26*s12+(sin_26^2)*s11))
+a22 = ((sin_26^2)/(cos_26^2*s11+2*sin_26*cos_26*s12+sin_26^2*s22)) + ((cos_26^2)/(cos_26^2*s22-2*sin_26*cos_26*s12+sin_26^2*s11))
+a12 = ((cos_26*sin_26)/(cos_26^2*s11+2*sin_26*cos_26*s12+sin_26^2*s22)) - ((sin_26*cos_26)/(cos_26^2*s22-2*sin_26*cos_26*s12+sin_26*s11))
+
+d_5_e = sqrt(a11*(x1_5^2)+2*a12*x1_5*x2_5+a22*x2_5^2)
+# En este punto es importante reconocer que no tenemos el mismo resultado, sin embargo, no pudimos encontrar el error.
+d_5_e
+
+```
+
+### Ejercicio 6  
+**Ejercicio 6.a**  
+Sea X = $(x_{1},x_{2})$, $\tilde{x}_{1} = x_1 cos(\theta)+x_2 sen(\theta)$, $\tilde{x}_{2} = -x_1 sen(\theta)+x_2 cos(\theta)$. Se tiene que la distancia estadística $d(0,x) = \sqrt{a_{11} x_1^2 + 2a_{12}x_1 x_2 + a_{22}x_2^2}$ donde $a_{ij}$ son funciones de $\theta$. Si asumimos que $a_{11} = 1, a_{22}=4, a_{12}=\frac{1}{2}$ se tiene que $d(0,X) = \sqrt{x_1^2+\frac{1}{2}2x_1 x_2 + 4 x_2^2}$. Y $d(0,X)^2 = x_1^2+x_1 x_2 + 4 x_2^2$. Por lo tanto, la primera función es válida.  
+**Ejercicio 6.b**  
+De forma equivalente al ejercicio 6.a, dado que $a_{12}   \neq 0$, la segunda función no es válida.
+
+### Ejercicio 7
+Muestre que la matriz de correlación muestral también se puede obtener como la matrix de covarianza
+de las observaciones estandarizadas.  
+  
+Sean S la matriz de varianzas y covarianzas, donde $S_{ik} = \frac{1}{n}\sum_{j=1}^{n}(x_{ji}-\overline{x}_i)(x_{jk}-\overline{x}_k)$. Reemplazando los valores $x_{ji}$ y $x_{jk}$ por valores estandarizados $(x_{ji}-\overline{x}_i)/\sqrt{S_{ii}}$ y $(x_{jk}-\overline{x}_k)/\sqrt{S_{kk}}$, respectivamente. Se tiene $\\S_{ik} = \frac{1}{n}\sum_{j=1}^{n}((x_{ji}-\overline{x}_i)/\sqrt{S_{ii}})((x_{jk}-\overline{x}_k)/\sqrt{S_{kk}})\\$  
+$= \frac{\frac{1}{n}\sum_{j=1}^{n}(x_{ji}-\overline{x}_i)(x_{jk}-\overline{x}_k)}{\sqrt{S_{ii}}\sqrt{S_{kk}}} = \frac{S_{ik}}{\sqrt{S_{ii}}\sqrt{S_{kk}}} = r_{ik}$  
+Por lo tanto, matriz de correlación muestral también se puede obtener como la matrix de covarianza
+de las observaciones estandarizadas.
+

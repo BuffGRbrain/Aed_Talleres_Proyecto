@@ -1,0 +1,8 @@
+"0","# b)"
+"0","X_barb = matrix(c(X_bar[1,1], X_bar[4,1]), ncol = 1)"
+"0","Sb = matrix(c(S[1,1], S[1,4], S[4,1],S[4,4]),byrow=TRUE,ncol=2)"
+"0",""
+"0","library(plotrix)"
+"2","package ‘plotrix’ was built under R version 4.0.5"
+"0","angle <- atan(eigen(Sb)$vectors[2,1]/eigen(Sb)$vectors[1,1]) "
+"0","plot(0,pch='',ylab='',xlab='',xlim=c(65,125),ylim=c(80,110))"
