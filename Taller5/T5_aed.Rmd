@@ -1,0 +1,268 @@
+---
+title: "T5_aed_Cabrera_Rodriguez_Ribero"
+author: "Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero"
+date: '2022-04-01'
+output: html_document
+---
+
+#### *1. Determine the population principal components $Y_{1}$ and $Y_{2}$ for the covariance matrix*
+
+$$
+\boldsymbol{\Sigma}=\left[\begin{array}{ll}
+5 & 2 \\
+2 & 2
+\end{array}\right]
+$$
+
+#### *Also, calculate the proportion of the total population variance explained by the first principal component.*
+
+```{r}
+SIG = matrix(c(5,2,2,2), nrow = 2)
+EIGN_SIG = eigen(SIG)
+e1 = EIGN_SIG$vectors[,1] #Componente principal 1
+e2 = EIGN_SIG$vectors[,2] #Componente principal 2
+
+PROP_CP1 = EIGN_SIG$values[1]/sum(EIGN_SIG$values) #1.b
+
+SIG
+print('Componentes principales, por fila')
+e1
+e2
+print('Proporción de la varianza explicada por la primera componente principal')
+PROP_CP1
+```
+
+#### *2. Convert the covariance matrix in Exercise 1 to a correlation matrix $\rho$.*
+
+```{r}
+R = cov2cor(SIG)
+R
+```
+
+##### (a) Determine the principal components $Y_{1}$ and $Y_{2}$ from $\boldsymbol{\rho}$ and compute the proportion of total population variance explained by $Y_{1}$.
+
+```{r}
+EIGEN_R = eigen(R)
+e1_R = EIGEN_R$vectors[,1] #Componente principal 1
+e2_R = EIGEN_R$vectors[,2] #Componente principal 2
+
+PROP_CP1_R = EIGEN_R$values[1]/sum(EIGEN_R$values) 
+
+R
+print('Componentes principales, por fila')
+e1_R
+e2_R
+print('Proporción de la varianza explicada por la primera componente principal')
+PROP_CP1_R
+
+```
+
+##### (b) Compare the components calculated in Part a with those obtained in Exercise 1. Are they the same? Should they be?
+
+```{r}
+cbind(e1, e2) #Componentes principales de ejercicio 1
+
+cbind(e1_R, e2_R) #Componentes principales de ejercicio 2
+```
+
+Nótese que la proporción de la varianza total explicada por cada componente prinicial estandarizando y sin estandarizar cambian muy poco, por ejemplo en la componente 1 que era 0.85 sin estandarizar y tras estandarizar se volvio 0.81. 
+
+##### (c) Compute the correlations $\rho_{Y_{1}, Z_{1}}, \rho_{Y_{1}, Z_{2}}$, and $\rho_{Y_{2}, Z_{1}}$
+
+```{r}
+p_y1_z1 = EIGEN_R$vectors[,1][1]*sqrt(EIGEN_R$values[1])
+p_y1_z2 = EIGEN_R$vectors[,1][2]*sqrt(EIGEN_R$values[1])
+
+p_y2_z1 = EIGEN_R$vectors[,2][1]*sqrt(EIGEN_R$values[2])
+
+
+p_y1_z1
+p_y1_z2
+p_y2_z1
+
+```
+
+#### *3. Data on $x_{1}=$ sales and $x_{2}=$ profits for the 10 largest companies in the world were already listed. We know that*
+
+$$
+\overline{\mathbf{x}}=\left[\begin{array}{r}
+155.60 \\
+14.70
+\end{array}\right], \quad \mathbf{S}=\left[\begin{array}{rr}
+7476.45 & 303.62 \\
+303.62 & 26.19
+\end{array}\right]
+$$
+
+##### (a) Determine the sample principal components and their variances for these data. (You may need the quadratic formula to solve for the eigenvalues of S.)
+
+```{r}
+s = matrix(c(7476.45,303.62,303.62,26.19), nrow = 2)
+EIGN_S = eigen(s)
+e1_3 = EIGN_S$vectors[,1] #Componente principal 1
+e2_3 = EIGN_S$vectors[,2] #Componente principal 2
+lambda_1 = EIGN_S$values[1] #Varianza cp 1
+lambda_2 = EIGN_S$values[2] #Varianza cp 2
+
+s
+print('Componentes principales, por fila')
+e1_3
+e2_3
+print('Varianza de cada componente principal')
+lambda_1
+lambda_2
+
+```
+
+
+##### (b) Find the proportion of the total sample variance explained by $\hat{y}_{1}$.
+
+```{r}
+PROP_CP1_s = EIGN_S$values[1]/sum(EIGN_S$values) 
+
+print('La proporción de la varianza total explicada por la componente 1 es:')
+PROP_CP1_s
+```
+
+
+##### (c) Compute the correlation coefficients $r_{\hat{y}{1}, x{k}}, k=1,2$. What interpretation, if any, can you give to the first principal component?
+
+```{r}
+p_y1_x1 = (e1_3[1]*sqrt(EIGN_S$values[1]))/sqrt(s[1,1])
+p_y1_x2 = (e1_3[2]*sqrt(EIGN_S$values[1]))/sqrt(s[2,2])
+
+p_y1_x1
+p_y1_x2
+```
+
+Si esta componente toma valores grandes en magnitud, se tiene que la nueva variable va a tomar valores muy pequeños dado que la correlación es negativa. 
+
+#### *4. Convert the covariance matrix $\mathbf{S}$ in Exercise 3 to a sample correlation matrix $\mathbf{R}$.*
+
+```{r}
+R_4 = cov2cor(s)
+
+```
+
+
+##### (a) Find the sample principal components $\hat{y}{1}, \hat{y}{2}$ and their variances.
+
+```{r}
+EIGN_R_4 = eigen(R_4)
+e1_4 = EIGN_R_4$vectors[,1] #Componente principal 1
+e2_4 = EIGN_R_4$vectors[,2] #Componente principal 2
+lambda_1_4 = EIGN_R_4$values[1] #Varianza cp 1
+lambda_2_4 = EIGN_R_4$values[2] #Varianza cp 2
+
+R_4
+print('Componentes principales, por fila')
+e1_4
+e2_4
+print('Varianza de cada componente principal')
+lambda_1_4
+lambda_2_4
+```
+
+
+##### (b) Compute the proportion of the total sample variance explained by $\hat{y}_{1}$.
+
+```{r}
+PROP_CP1_R_4 = EIGN_R_4$values[1]/sum(EIGN_R_4$values)
+print('La proporción de la varianza total explicada por la componente 1 es:')
+PROP_CP1_R_4
+```
+
+##### (c) Compute the correlation coefficients $r_{\tilde{y}{1}, z{k}}, k=1,2$. Interpret $\hat{y}_{1}$
+
+```{r}
+r_y1_z1 = EIGN_R_4$vectors[,1][1]*sqrt(EIGN_R_4$values[1])
+r_y1_z2 = EIGN_R_4$vectors[,1][2]*sqrt(EIGN_R_4$values[1])
+r_y1_z1
+r_y1_z2
+```
+
+Basado en lo anterior concluimos que cuando aumentan los valores de las entradas (Xs), nuestra variable nueva $\hat{y_1}$ que es la proyección de la componente principal 1 aumenta. Además como los valores de cada variable son los mismos esto nos dice que ambas tienen el mismo peso sobre la componente principal 1.   
+
+##### (d) Compare the components obtained in Part a with those obtained in Exercise 3 (a) do you feelthat it is better to determine principal components from the sample covariance matrix or sample correlation matrix? Explain.
+
+```{r}
+cbind(e1_3,e2_3) #Componentes principales sin estandarizar 3a
+PROP_CP1_s
+
+cbind(e1_4,e2_4) #Componentes principales estandarizados 4a
+PROP_CP1_R_4
+```
+
+En este caso es mejor hayar los componentes principales sin haber estandarizado la matriz de cov, ya que tienen una mayor varianca que nos permite ver como se comportan los datos y como no es algo tan crítico como datos clínicos no es tan importante hacer el tradeoff de exactitud por estandarización.Nótese que la primera componente sin estandarizar explica el 99% de la varianza de los datos de la muestra, que es mucho mayor que el 84% de la estandarizada.
+
+#### *5. The weekly rates of return for five stocks listed on the New York Stock Exchange are given in Table 1 (stock_data. DAT ).*
+
+##### (a) Construct the sample covariance matrix $\mathbf{S}$, and find the sample principal components. (Note that the sample mean vector $\overline{\mathbf{x}}$ is displayed in Example 8.5.)
+
+
+Week | JP Morgan | Citibank | Wells Fargo | Royal Dutch Shell | Exxon Mobil 
+:-----:|:-----:|:----:|:-----:|:----:|:-----:|
+1|0.01303|-0.00784|-0.00319|-0.04477|0.00522|
+2|0.00849|0.01669|-0.00621|0.01196| 0.01349 |
+3|-0.01792|-0.00864 |0.01004 |0   |-0.00614|
+4|0.02156|-0.00349|0.01744|-0.02859|-0.00695 |
+5|0.01082|0.00372|-0.01013|0.02919|0.04098 |
+6|0.01017|-0.01220|-0.00838|0.01371| 0.00299 |
+7|0.01113|0.02800|0.00807|0.03054|0.00323 |
+8|0.04848|-0.00515|0.01825|0.00633| 0.00768 |
+9|-0.03449|-0.01380|-0.00805|-0.02990|-0.01081 |
+10|-0.00466|0.02099|-0.00608|-0.02039| -0.01267 |
+.|.|.|.|.| . |
+.|.|.|.|.| . |
+.|.|.|.|.| . |
+
+Table 1: Stock-Price Data (Weekly Rate of Return)
+
+##### (b) Determine the proportion of the total sample variance explained by the first three principal components. Interpret these components.
+
+##### (c) Given the results in Parts a-b, do you feel that the stock rates-of-return data can be summarized in fewer than five dimensions? Explain.
+
+#### *6. Consider the census-tract data listed in Table 2 (census_tract.DAT). Suppose the observations on $X_{5}=$ median value home were recorded in ten thousands, rather than hundred thousands, of dollars; that is, multiply all the numbers listed in the sixth column of the table by 10 .*
+
+##### (a) Construct the sample covariance matrix $S$ for the census-tract data when $X_{5}=$ median value home is recorded in ten thousands of dollars.
+
+##### (b) Obtain the eigenvalue-eigenvector pairs and the first two sample principal components for the covariance matrix in Part a.
+
+##### (c) Compute the proportion of total variance explained by the first two principal components obtained in Part b. Calculate the correlation coefficients, $r_{y_{i}, x_{k}}$, and interpret these components if possible.
+
+$$
+\begin{tabular}{cccccc} 
+Total & Professional population (thousands) & Employed (percent) & Government age over 16 (percent) & Median employment (percent) & home value $(\$ 100,000)$ \\
+\hline 1 & $2.67$ & $5.71$ & $69.02$ & $30.3$ & $1.48$ \\
+2 & $2.25$ & $4.37$ & $72.98$ & $43.3$ & $1.44$ \\
+3 & $3.12$ & $10.27$ & $64.94$ & $32.0$ & $2.11$ \\
+4 & $5.14$ & $7.44$ & $71.29$ & $24.5$ & $1.85$ \\
+5 & $5.54$ & $9.25$ & $74.94$ & $31.0$ & $2.23$ \\
+6 & $5.04$ & $4.84$ & $53.61$ & $48.2$ & $1.60$ \\
+7 & $3.14$ & $4.82$ & $67.00$ & $37.6$ & $1.52$ \\
+8 & $2.43$ & $2.40$ & $67.20$ & $36.8$ & $1.40$ \\
+9 & $5.38$ & $4.30$ & $83.03$ & $19.7$ & $2.07$ \\
+10 & $7.34$ & $2.73$ & $72.60$ & $24.5$ & $1.42$ \\
+& $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$
+\end{tabular}
+$$
+
+ | Total Population (thousands) | Professional degree (percent) | Employed age over 16 (percent) | Government employment (percent)| Median home value ($100,000) 
+:-----:|:-----:|:----:|:-----:|:----:|:-----:|
+1| 2.67|5.71|69.02|30.3| |1.48|
+2|2.25|4.37|72.98|43.3|1.44|
+3|3.12|10.27|64.94|32.0|2.11|
+4|5.14|7.44|71.29|24.5|1.85|
+5|5.54|9.25|74.94|31.0|2.23|
+6|5.04|4.84|53.61|48.2|1.60|
+7|3.14|4.82|67.00|37.6|1.52|
+8|2.43|2.40|67.20|36.8|1.40|
+9|5.38|4.30|83.03|19.7|2.07|
+10|7.34|2.73|72.60|24.5|1.42|
+.|.|.|.|.| . |
+.|.|.|.|.| . |
+.|.|.|.|.| . |
+
+
+
+Table 2: Census-track Data
