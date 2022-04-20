@@ -1,6 +1,6 @@
 ---
 title: "T5_aed_Cabrera_Rodriguez_Ribero"
-author: "Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero"
+author: "Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero, David Meléndez"
 date: '2022-04-01'
 output: html_document
 ---
@@ -198,7 +198,16 @@ En este caso es mejor hayar los componentes principales sin haber estandarizado 
 #### *5. The weekly rates of return for five stocks listed on the New York Stock Exchange are given in Table 1 (stock_data. DAT ).*
 
 ##### (a) Construct the sample covariance matrix $\mathbf{S}$, and find the sample principal components. (Note that the sample mean vector $\overline{\mathbf{x}}$ is displayed in Example 8.5.)
+library(dplyr)
 
+```{r}
+stock_track <- read.table("stock_data.DAT")
+census_track <- read.table("census_track.DAT")
+
+stock_covariance_matrix <- var(stock_track)
+stock_track.pca <- prcomp(stock_track)
+summary(stock_track.pca)
+```
 
 Week | JP Morgan | Citibank | Wells Fargo | Royal Dutch Shell | Exxon Mobil 
 :-----:|:-----:|:----:|:-----:|:----:|:-----:|
@@ -220,15 +229,60 @@ Table 1: Stock-Price Data (Weekly Rate of Return)
 
 ##### (b) Determine the proportion of the total sample variance explained by the first three principal components. Interpret these components.
 
+Los 3 primeros componentes principales explican juntos el 89.881 % de la varianza total
+del dataset. Esto implica que al reducir a 3 dimensiones, perdemos menos del 20 % de la
+varianza total.
+
 ##### (c) Given the results in Parts a-b, do you feel that the stock rates-of-return data can be summarized in fewer than five dimensions? Explain.
+
+El Componente principal 1 explica el solo el 52.926 de la varianza total.
+Ademas el Componente principal 2 logra explicar el 27.133 % de la varianza total. Si solo usamos los 2 primeros componentes principales logramos reducir de de 5 dimensiones a 2 perdiendo menos del 20% de varianza total. Esto es un gran logro pues eliminamos 3 dimensiones.
 
 #### *6. Consider the census-tract data listed in Table 2 (census_tract.DAT). Suppose the observations on $X_{5}=$ median value home were recorded in ten thousands, rather than hundred thousands, of dollars; that is, multiply all the numbers listed in the sixth column of the table by 10 .*
 
 ##### (a) Construct the sample covariance matrix $S$ for the census-tract data when $X_{5}=$ median value home is recorded in ten thousands of dollars.
 
+Segun lo sugerido en el problema, debemos mutar el dataframe
+debemos multiplicar por 10 la variable 5
+
+```{r}
+library(dplyr)
+census_track <- census_track %>%
+  mutate(V5 = V5 * 10)
+```
+
+Construimos la matriz de covarianza
+```{r}
+census_covariance_matrix <- var(census_track)
+census.eig <- eigen(census_covariance_matrix)
+census.eig
+```
+
 ##### (b) Obtain the eigenvalue-eigenvector pairs and the first two sample principal components for the covariance matrix in Part a.
 
+```{r}
+census_track.pca <- prcomp(census_track, center = TRUE,scale. = TRUE)
+summary(census_track.pca)
+```
+
 ##### (c) Compute the proportion of total variance explained by the first two principal components obtained in Part b. Calculate the correlation coefficients, $r_{y_{i}, x_{k}}$, and interpret these components if possible.
+
+Vamos a escalar los datos
+```{r}
+census_track.scaled <- scale(census_track, center = TRUE, scale = TRUE)
+census_covariance_matrix.scaled <- cor(census_track.scaled)
+
+census_track.scaled.eig <- eigen(census_covariance_matrix.scaled)
+census_track.scaled.eig
+```
+
+Los autovalores escalados explican la varianza de su PCA respectivo al igual que sin escalar,
+esto implica que si el autovalor y el autovalor escalado difieren, entonces el proceso de
+escalar los datos implica perder (o ganar) cierta explicacion de los datos al hacer el proceso
+de PCA. Esto es realmente importante, ya que el metodo comun de escalar los datos ya no es 
+siempre oportuno (al menos en PCA).
+
+
 
 $$
 \begin{tabular}{cccccc} 

@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero" />
+<meta name="author" content="Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero, David Meléndez" />
 
 <meta name="date" content="2022-04-01" />
 
@@ -166,7 +166,7 @@ pre code {
 
 
 <h1 class="title toc-ignore">T5_aed_Cabrera_Rodriguez_Ribero</h1>
-<h4 class="author">Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero</h4>
+<h4 class="author">Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero, David Meléndez</h4>
 <h4 class="date">2022-04-01</h4>
 
 </div>
@@ -388,7 +388,18 @@ r_y1_z1</code></pre>
 <h4><em>5. The weekly rates of return for five stocks listed on the New York Stock Exchange are given in Table 1 (stock_data. DAT ).</em></h4>
 <div id="a-construct-the-sample-covariance-matrix-mathbfs-and-find-the-sample-principal-components.-note-that-the-sample-mean-vector-overlinemathbfx-is-displayed-in-example-8.5." class="section level5">
 <h5>(a) Construct the sample covariance matrix <span class="math inline">\(\mathbf{S}\)</span>, and find the sample principal components. (Note that the sample mean vector <span class="math inline">\(\overline{\mathbf{x}}\)</span> is displayed in Example 8.5.)</h5>
-<p><em>Resumen de los modelos para conjunto de testeo:</em></p>
+<p>library(dplyr)</p>
+<pre class="r"><code>stock_track &lt;- read.table(&quot;stock_data.DAT&quot;)
+census_track &lt;- read.table(&quot;census_track.DAT&quot;)
+
+stock_covariance_matrix &lt;- var(stock_track)
+stock_track.pca &lt;- prcomp(stock_track)
+summary(stock_track.pca)</code></pre>
+<pre><code>## Importance of components:
+##                            PC1     PC2     PC3     PC4     PC5
+## Standard deviation     0.03698 0.02648 0.01593 0.01194 0.01090
+## Proportion of Variance 0.52926 0.27133 0.09822 0.05518 0.04601
+## Cumulative Proportion  0.52926 0.80059 0.89881 0.95399 1.00000</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -511,21 +522,75 @@ r_y1_z1</code></pre>
 </div>
 <div id="b-determine-the-proportion-of-the-total-sample-variance-explained-by-the-first-three-principal-components.-interpret-these-components." class="section level5">
 <h5>(b) Determine the proportion of the total sample variance explained by the first three principal components. Interpret these components.</h5>
+<p>Los 3 primeros componentes principales explican juntos el 89.881 % de la varianza total del dataset. Esto implica que al reducir a 3 dimensiones, perdemos menos del 20 % de la varianza total.</p>
 </div>
 <div id="c-given-the-results-in-parts-a-b-do-you-feel-that-the-stock-rates-of-return-data-can-be-summarized-in-fewer-than-five-dimensions-explain." class="section level5">
 <h5>(c) Given the results in Parts a-b, do you feel that the stock rates-of-return data can be summarized in fewer than five dimensions? Explain.</h5>
+<p>El Componente principal 1 explica el solo el 52.926 de la varianza total. Ademas el Componente principal 2 logra explicar el 27.133 % de la varianza total. Si solo usamos los 2 primeros componentes principales logramos reducir de de 5 dimensiones a 2 perdiendo menos del 20% de varianza total. Esto es un gran logro pues eliminamos 3 dimensiones.</p>
 </div>
 </div>
 <div id="consider-the-census-tract-data-listed-in-table-2-census_tract.dat.-suppose-the-observations-on-x_5-median-value-home-were-recorded-in-ten-thousands-rather-than-hundred-thousands-of-dollars-that-is-multiply-all-the-numbers-listed-in-the-sixth-column-of-the-table-by-10-." class="section level4">
 <h4><em>6. Consider the census-tract data listed in Table 2 (census_tract.DAT). Suppose the observations on <span class="math inline">\(X_{5}=\)</span> median value home were recorded in ten thousands, rather than hundred thousands, of dollars; that is, multiply all the numbers listed in the sixth column of the table by 10 .</em></h4>
 <div id="a-construct-the-sample-covariance-matrix-s-for-the-census-tract-data-when-x_5-median-value-home-is-recorded-in-ten-thousands-of-dollars." class="section level5">
 <h5>(a) Construct the sample covariance matrix <span class="math inline">\(S\)</span> for the census-tract data when <span class="math inline">\(X_{5}=\)</span> median value home is recorded in ten thousands of dollars.</h5>
+<p>Segun lo sugerido en el problema, debemos mutar el dataframe debemos multiplicar por 10 la variable 5</p>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>census_track &lt;- census_track %&gt;%
+  mutate(V5 = V5 * 10)</code></pre>
+<p>Construimos la matriz de covarianza</p>
+<pre class="r"><code>census_covariance_matrix &lt;- var(census_track)
+census.eig &lt;- eigen(census_covariance_matrix)
+census.eig</code></pre>
+<pre><code>## eigen() decomposition
+## $values
+## [1] 108.271939  43.139674  31.267127   4.598098   2.347868
+## 
+## $vectors
+##             [,1]       [,2]        [,3]        [,4]        [,5]
+## [1,]  0.03762881 0.06230915 -0.03997936 -0.55553173  0.82733777
+## [2,] -0.11892964 0.24930105  0.26052476  0.76839232  0.51517455
+## [3,]  0.47967291 0.75967654 -0.43064872  0.02807896 -0.08098582
+## [4,] -0.85891177 0.31639989 -0.39364417 -0.06867379 -0.04989847
+## [5,] -0.12893518 0.50670427  0.76818907 -0.30895506 -0.20262977</code></pre>
 </div>
 <div id="b-obtain-the-eigenvalue-eigenvector-pairs-and-the-first-two-sample-principal-components-for-the-covariance-matrix-in-part-a." class="section level5">
 <h5>(b) Obtain the eigenvalue-eigenvector pairs and the first two sample principal components for the covariance matrix in Part a.</h5>
+<pre class="r"><code>census_track.pca &lt;- prcomp(census_track, center = TRUE,scale. = TRUE)
+summary(census_track.pca)</code></pre>
+<pre><code>## Importance of components:
+##                           PC1    PC2    PC3    PC4     PC5
+## Standard deviation     1.4114 1.1694 0.9296 0.7315 0.49126
+## Proportion of Variance 0.3984 0.2735 0.1728 0.1070 0.04827
+## Cumulative Proportion  0.3984 0.6719 0.8447 0.9517 1.00000</code></pre>
 </div>
 <div id="c-compute-the-proportion-of-total-variance-explained-by-the-first-two-principal-components-obtained-in-part-b.-calculate-the-correlation-coefficients-r_y_i-x_k-and-interpret-these-components-if-possible." class="section level5">
 <h5>(c) Compute the proportion of total variance explained by the first two principal components obtained in Part b. Calculate the correlation coefficients, <span class="math inline">\(r_{y_{i}, x_{k}}\)</span>, and interpret these components if possible.</h5>
+<p>Vamos a escalar los datos</p>
+<pre class="r"><code>census_track.scaled &lt;- scale(census_track, center = TRUE, scale = TRUE)
+census_covariance_matrix.scaled &lt;- cor(census_track.scaled)
+
+census_track.scaled.eig &lt;- eigen(census_covariance_matrix.scaled)
+census_track.scaled.eig</code></pre>
+<pre><code>## eigen() decomposition
+## $values
+## [1] 1.9919183 1.3675266 0.8641573 0.5350610 0.2413367
+## 
+## $vectors
+##            [,1]       [,2]        [,3]       [,4]       [,5]
+## [1,]  0.2625829  0.4629936  0.78390268  0.2169291  0.2347882
+## [2,] -0.5933541  0.3256442 -0.16407255 -0.1446471  0.7028828
+## [3,]  0.3256978  0.6051419 -0.22487455 -0.6628689 -0.1943206
+## [4,] -0.4792022 -0.2524850  0.55070086 -0.5716730 -0.2766497
+## [5,] -0.4932213  0.4996473 -0.06882436  0.4072024 -0.5801162</code></pre>
+<p>Los autovalores escalados explican la varianza de su PCA respectivo al igual que sin escalar, esto implica que si el autovalor y el autovalor escalado difieren, entonces el proceso de escalar los datos implica perder (o ganar) cierta explicacion de los datos al hacer el proceso de PCA. Esto es realmente importante, ya que el metodo comun de escalar los datos ya no es siempre oportuno (al menos en PCA).</p>
 <p><span class="math display">\[
 \begin{tabular}{cccccc} 
 Total &amp; Professional population (thousands) &amp; Employed (percent) &amp; Government age over 16 (percent) &amp; Median employment (percent) &amp; home value $(\$ 100,000)$ \\
@@ -541,7 +606,134 @@ Total &amp; Professional population (thousands) &amp; Employed (percent) &amp; G
 10 &amp; $7.34$ &amp; $2.73$ &amp; $72.60$ &amp; $24.5$ &amp; $1.42$ \\
 &amp; $\vdots$ &amp; $\vdots$ &amp; $\vdots$ &amp; $\vdots$ &amp; $\vdots$
 \end{tabular}
-\]</span> Table 2: Census-track Data</p>
+\]</span></p>
+<table>
+<colgroup>
+<col width="17%" />
+<col width="17%" />
+<col width="15%" />
+<col width="17%" />
+<col width="15%" />
+<col width="17%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Total Population (thousands)</th>
+<th align="center">Professional degree (percent)</th>
+<th align="center">Employed age over 16 (percent)</th>
+<th align="center">Government employment (percent)</th>
+<th align="center">Median home value ($100,000)</th>
+<th align="center"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">2.67</td>
+<td align="center">5.71</td>
+<td align="center">69.02</td>
+<td align="center">30.3</td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">2.25</td>
+<td align="center">4.37</td>
+<td align="center">72.98</td>
+<td align="center">43.3</td>
+<td align="center">1.44</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">3.12</td>
+<td align="center">10.27</td>
+<td align="center">64.94</td>
+<td align="center">32.0</td>
+<td align="center">2.11</td>
+</tr>
+<tr class="even">
+<td align="center">4</td>
+<td align="center">5.14</td>
+<td align="center">7.44</td>
+<td align="center">71.29</td>
+<td align="center">24.5</td>
+<td align="center">1.85</td>
+</tr>
+<tr class="odd">
+<td align="center">5</td>
+<td align="center">5.54</td>
+<td align="center">9.25</td>
+<td align="center">74.94</td>
+<td align="center">31.0</td>
+<td align="center">2.23</td>
+</tr>
+<tr class="even">
+<td align="center">6</td>
+<td align="center">5.04</td>
+<td align="center">4.84</td>
+<td align="center">53.61</td>
+<td align="center">48.2</td>
+<td align="center">1.60</td>
+</tr>
+<tr class="odd">
+<td align="center">7</td>
+<td align="center">3.14</td>
+<td align="center">4.82</td>
+<td align="center">67.00</td>
+<td align="center">37.6</td>
+<td align="center">1.52</td>
+</tr>
+<tr class="even">
+<td align="center">8</td>
+<td align="center">2.43</td>
+<td align="center">2.40</td>
+<td align="center">67.20</td>
+<td align="center">36.8</td>
+<td align="center">1.40</td>
+</tr>
+<tr class="odd">
+<td align="center">9</td>
+<td align="center">5.38</td>
+<td align="center">4.30</td>
+<td align="center">83.03</td>
+<td align="center">19.7</td>
+<td align="center">2.07</td>
+</tr>
+<tr class="even">
+<td align="center">10</td>
+<td align="center">7.34</td>
+<td align="center">2.73</td>
+<td align="center">72.60</td>
+<td align="center">24.5</td>
+<td align="center">1.42</td>
+</tr>
+<tr class="odd">
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+</tr>
+<tr class="even">
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+</tr>
+<tr class="odd">
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+<td align="center">.</td>
+</tr>
+</tbody>
+</table>
+<p>Table 2: Census-track Data</p>
 </div>
 </div>
 
