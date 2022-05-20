@@ -1,0 +1,184 @@
+---
+title: "T7aed"
+author: "Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero, David Melendez"
+date: '2022-05-13'
+output: html_document
+---
+
+#### 1. Consider the two data sets
+
+$$
+\mathbf{X}_{1}=\left[\begin{array}{ll}
+3 & 7 \\
+2 & 4 \\
+4 & 7
+\end{array}\right] \text { and } \mathbf{X}_{2}=\left[\begin{array}{ll}
+6 & 9 \\
+5 & 7 \\
+4 & 8
+\end{array}\right]
+$$
+
+##### for which
+
+$$
+\overline{\mathbf{x}}_{1}=\left[\begin{array}{l}
+3 \\
+6
+\end{array}\right], \quad \overline{\mathbf{x}}_{2}=\left[\begin{array}{l}
+5 \\
+8
+\end{array}\right]
+$$
+
+##### and
+
+$$
+\mathbf{S}_{\text {pooled }}=\left[\begin{array}{ll}
+1 & 1 \\
+1 & 2
+\end{array}\right]
+$$
+
+#### (a) Calculate the linear discriminant function
+
+$\hat{y}=\left(\overline{\mathbf{x}}{1}-\overline{\mathbf{x}}{2}\right)^{\prime} \mathbf{S}_{\text {pooled }}^{-1} \mathbf{x}=\hat{\mathbf{a}}^{\prime} \mathbf{x}$.
+
+
+```{r}
+X1_mean = c(3,6)
+  
+X2_mean = c(5,8)
+
+Spooled = cbind(c(1,1),c(1,2))
+
+y_gorrito = t(X1_mean-X2_mean)%*%solve(Spooled)
+```
+$$
+\hat{y} = (-2,0) X_0
+$$
+
+
+##### (b) Classify the observation
+
+$\mathbf{x}{0}^{\prime}=\left[\begin{array}{cc}2 & 7\end{array}\right]$ as population $\pi{1}$ or population $\pi_{2}$, 
+
+##### using The Estimated Minimum ECM Rule for Two Normal Populations with equal priors and equal costs.
+
+```{r}
+X_0 = c(2,7)
+Minimizan_ECM = y_gorrito %*% X_0 - (1/2)*y_gorrito%*%(X1_mean+X2_mean)
+
+```
+##### Como $4>0$ clásificamos la observación $X_0$ en $\pi_1$
+
+##### (c) Develop a linear classification function for the data using $\hat{y}$ from (a).
+
+```{r}
+y_gorrito_0 = y_gorrito%*%X_0
+
+```
+
+##### (d) Using the function in (c) and
+
+$\hat{m}=\frac{1}{2}\left(\overline{\mathbf{x}}{1}-\overline{\mathbf{x}}{2}\right)^{\prime} \mathbf{S}{\text {pooled }}^{-1}\left(\overline{\mathbf{x}}{1}+\overline{\mathbf{x}}_{2}\right)$, construct the "confusion matrix" by classifying the given observations.
+
+```{r}
+m_gorro = (1/2) * y_gorrito%*%(X1_mean+X2_mean)
+
+#Clasificando Dataset X1
+X1 = cbind(c(3,2,4),c(7,4,7))
+n1c = 0 #clasificaciones correctas
+n1m = 0 #clasificaciones incorrectas
+for  (i in c(1,2,3)){
+  print(i)
+  y_gorrito_0 = y_gorrito%*%X1[i,]
+  regla_fisher = y_gorrito_0 - m_gorro
+  if (regla_fisher>=0){ #clasifica en pie1
+   n1c=n1c+1
+  }else{#clasifica en pie2
+   n1m=n1m+1 
+  }
+}
+print(n1c)
+print(n1m)
+
+#Clasificando Dataset X2
+X2 = cbind(c(6,5,4),c(9,7,8))
+n2c = 0 #clasificaciones correctas
+n2m = 0 #clasificaciones incorrectas
+for  (i in c(1,2,3)){
+  print(i)
+  y_gorrito_0 = y_gorrito%*%X2[i,]
+  regla_fisher = y_gorrito_0 - m_gorro
+  if (regla_fisher>=0){ #clasifica en pie2
+   n2c=n2c+1
+  }else{#clasifica en pie1
+   n2m=n2m+1 
+  }
+}
+print(n2c)
+print(n2m)
+
+#Matriz de confusion
+confusion_matrix = cbind(c(n1c,n2m),c(n1m,n2c))
+
+```
+
+Entonces clasificamos $X_0$ según la regla de Fisher como $\pi_1$ y la matriz de confusíon es: 
+ 
+
+
+| <span>            |             |               |
+|-------------------|-------------|---------------|
+| $\pi_1$           | 3           | 0             |
+| $\pi_2$           | 2           | 1             |
+
+##### (e) Given the results in (d), calculate the apparent error rate (APER).
+
+```{r}
+APER = (n1m+n2m)/(6);APER
+```
+
+#### 2. Suppose that $n_{1}=11$ and $n_{2}=12$ observations are made on two random variables $X_{1}$ and $X_{2}$, where $X_{1}$ and $X_{2}$ are assumed to have a bivariate normal distribution with a common covariance matrix $\boldsymbol{\Sigma}$, but possibly different mean vectors $\boldsymbol{\mu}{1}$ and $\boldsymbol{\mu}{2}$ for the two samples. The sample mean vectors and pooled covariance matrix are
+
+$$
+\begin{array}{l}
+\overline{\mathbf{x}}_{1}=\left[\begin{array}{l}
+-1 \\
+-1
+\end{array}\right] ; \quad \overline{\mathbf{x}}_{2}=\left[\begin{array}{l}
+2 \\
+1
+\end{array}\right] \\
+\mathbf{S}_{\text {pooled }}=\left[\begin{array}{rr}
+7.3 & -1.1 \\
+-1.1 & 4.8
+\end{array}\right]
+\end{array}
+$$
+
+##### (a) Construct Fisher's (sample) linear discriminant function:
+
+$\hat{y}=\left(\overline{\mathbf{x}}{1}-\overline{\mathbf{x}}{2}\right)^{\prime} \mathbf{S}_{\text {pooled }}^{-1} \mathbf{x}=$ $\hat{\mathbf{a}}^{\prime} \mathbf{x}$.
+
+```{r}
+n1 = 11
+n2 = 12
+x1_barra = c(-1,-1)
+x2_barra = c(2,1)
+Spooled = cbind(c(7.3,-1.1),c(-1.1,4.8))
+y_gorrito = t(x1_barra-x2_barra)%*%solve(Spooled)
+
+```
+
+##### (b) Assign the observation $\mathbf{x}{0}^{\prime}=\left[\begin{array}{ll}0 & 1\end{array}\right]$ to either population $\pi{1}$ or $\pi_{2}$. Assume equal costs and equal prior probabilities.
+
+```{r}
+X_0 = c(0,1)
+m_gorro = (1/2) * y_gorrito%*%(x1_barra+x2_barra)
+y_gorrito_0 = y_gorrito%*%X_0
+regla_fisher = y_gorrito_0 - m_gorro
+```
+
+Concluimos que la observación $X_0$ corresponde a $\pi_2$ por la regla de fisher

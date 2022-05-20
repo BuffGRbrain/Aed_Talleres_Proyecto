@@ -1,0 +1,253 @@
+---
+title: "T4_aed_Cabrera_Rodriguez_Ribero"
+author: "Rafael Cabrera, Juan Camilo Rodriguez, Guillermo Ribero, David Melendez"
+date: '2022-03-11'
+output: html_document
+---
+
+#### 1. Considere la matriz de covarianza para el vector aleatorio:
+$$
+\begin{gathered}
+\mathbf{X}=\left[\begin{array}{l}
+X_{1}^{(1)} \\
+X_{2}^{(1)} \\
+X_{1}^{(2)} \\
+X_{2}^{(2)}
+\end{array}\right] \\
+\mathbf{\Sigma}=\left[\begin{array}{llll}
+100 & 0 & 0 & 0 \\
+0 & 1 & .95 & 0 \\
+0 & .95 & 1 & 0 \\
+0 & 0 & 0 & 100
+\end{array}\right]
+\end{gathered}
+$$
+##### Halle las variantes canónicas y las correlaciones canónicas.
+
+```{r}
+s11_c1 = c(100, 0)
+s11_c2 = c(0, 1)
+sigma_11 = cbind(s11_c1,s11_c2)
+
+s12_c1 = c(0,0.95)
+s12_c2 = c(0, 0)
+sigma_12 = cbind(s12_c1,s12_c2)
+
+s21_c1 = c(0, 0)
+s21_c2 = c(0.95,0 )
+sigma_21 = cbind(s21_c1,s21_c2)
+
+s22_c1 = c(1, 0)
+s22_c2 = c(0, 100)
+sigma_22 = cbind(s22_c1,s22_c2)
+
+lambda_11 = eigen(sigma_11)$values
+lambda_11_vecs = eigen(sigma_11)$vectors
+lambda_11_raro = lambda_11**(-1/2)
+lambda_11_mat = matrix(data = c(0,0,0,0), nrow = 2, ncol = 2)
+lambda_11_mat[1,1] = lambda_11_raro[1]
+lambda_11_mat[2,2] = lambda_11_raro[2]
+  
+P_11 = eigen(sigma_11)$vectors
+
+sigma_11_raro = P_11 %*% lambda_11_mat %*% t(P_11)
+
+matriz_mmvga = sigma_11_raro %*% sigma_12 %*% solve(sigma_22) %*% sigma_21 %*% sigma_11_raro
+
+eigen_mmvga_vects = eigen(matriz_mmvga)$vectors
+
+U_1 = eigen_mmvga_vects[,1] %*% sigma_11_raro
+U_2 = eigen_mmvga_vects[,2] %*% sigma_11_raro
+
+lambda_22 = eigen(sigma_22)$values
+lambda_22_raro = lambda_22**(-1/2)
+lambda_22_mat = matrix(data = c(0,0,0,0), nrow = 2, ncol = 2)
+lambda_22_mat[1,1] = lambda_22_raro[1]
+lambda_22_mat[2,2] = lambda_22_raro[2]
+  
+P_22 = eigen(sigma_22)$vectors
+
+sigma_22_raro = P_22 %*% lambda_22_mat %*% t(P_22)
+
+matriz_mmvga_f = sigma_22_raro %*% sigma_21 %*% solve(sigma_11) %*% sigma_12 %*% sigma_22_raro
+eigen_mmvga_vects_f = eigen(matriz_mmvga_f)$vectors
+V_1 = eigen_mmvga_vects_f[,1] %*% sigma_22_raro
+V_2 = eigen_mmvga_vects_f[,2] %*% sigma_22_raro
+
+
+#Correlaciones
+corr_u1_v1 = sqrt(eigen(matriz_mmvga)$values) 
+corr_u2_v2 = sqrt(eigen(matriz_mmvga_f)$values)
+
+####### Respuestas
+## Variantes canónicas
+U_1
+V_1
+U_2
+V_2
+
+## Correlaciones canónicas
+corr_u1_v1
+corr_u2_v2
+```
+$$
+U_1 = 0X_{1}^{({1})}    \ \ \  1X_{2}^{({1})}  \\
+V_1 = -1X_{1}^{({2})}   \ \ \  0X_{2}^{({2})}  \\
+U_2 = -0.1X_{1}^{({1})} \ \ \  0X_{2}^{({1})}  \\
+V_2 = 0X_{1}^{({2})}    \ \ \  -0.1X_{2}^{({2})}
+$$
+
+
+
+#### 2. Considere el vector aleatorio:
+$$
+\mathbf{X}=\left[\begin{array}{c}
+X_{1}^{(1)} \\
+X_{2}^{(1)} \\
+X_{1}^{(2)} \\
+X_{2}^{(2)}
+\end{array}\right]
+$$
+Con media y covarianza
+$$
+\begin{gathered}
+\mathbf{X}=\left[\begin{array}{l}
+-3 \\
+2 \\
+0 \\
+1
+\end{array}\right] \\
+\mathbf{\Sigma}=\left[\begin{array}{cccc}
+8 & 2 & 3 & 1 \\
+2 & 5 & -1 & 3 \\
+3 & -1 & 6 & -2 \\
+1 & 3 & -2 & 7
+\end{array}\right]
+\end{gathered}
+$$
+Halle las variantes canónicas y las correlaciones canónicas.
+
+```{r}
+s11_c1 = c(8, 2)
+s11_c2 = c(2, 5)
+sigma_11 = cbind(s11_c1,s11_c2)
+
+s12_c1 = c(3,-1)
+s12_c2 = c(1, 3)
+sigma_12 = cbind(s12_c1,s12_c2)
+
+s21_c1 = c(3, 1)
+s21_c2 = c(-1, 3 )
+sigma_21 = cbind(s21_c1,s21_c2)
+
+s22_c1 = c(6, -2)
+s22_c2 = c(-2, 7)
+sigma_22 = cbind(s22_c1,s22_c2)
+
+lambda_11 = eigen(sigma_11)$values
+lambda_11_vecs = eigen(sigma_11)$vectors
+lambda_11_raro = lambda_11**(-1/2)
+lambda_11_mat = matrix(data = c(0,0,0,0), nrow = 2, ncol = 2)
+lambda_11_mat[1,1] = lambda_11_raro[1]
+lambda_11_mat[2,2] = lambda_11_raro[2]
+  
+P_11 = eigen(sigma_11)$vectors
+
+sigma_11_raro = P_11 %*% lambda_11_mat %*% t(P_11)
+
+matriz_mmvga = sigma_11_raro %*% sigma_12 %*% solve(sigma_22) %*% sigma_21 %*% sigma_11_raro
+
+eigen_mmvga_vects = eigen(matriz_mmvga)$vectors
+
+U_1 = eigen_mmvga_vects[,1] %*% sigma_11_raro
+U_2 = eigen_mmvga_vects[,2] %*% sigma_11_raro
+
+lambda_22 = eigen(sigma_22)$values
+lambda_22_raro = lambda_22**(-1/2)
+lambda_22_mat = matrix(data = c(0,0,0,0), nrow = 2, ncol = 2)
+lambda_22_mat[1,1] = lambda_22_raro[1]
+lambda_22_mat[2,2] = lambda_22_raro[2]
+  
+P_22 = eigen(sigma_22)$vectors
+
+sigma_22_raro = P_22 %*% lambda_22_mat %*% t(P_22)
+
+matriz_mmvga_f = sigma_22_raro %*% sigma_21 %*% solve(sigma_11) %*% sigma_12 %*% sigma_22_raro
+eigen_mmvga_vects_f = eigen(matriz_mmvga_f)$vectors
+V_1 = eigen_mmvga_vects_f[,1] %*% sigma_22_raro
+V_2 = eigen_mmvga_vects_f[,2] %*% sigma_22_raro
+
+
+#Correlaciones
+corr_u1_v1 = sqrt(eigen(matriz_mmvga)$values) 
+corr_u2_v2 = sqrt(eigen(matriz_mmvga_f)$values)
+
+
+####### Respuestas
+## Variantes canónicas
+U_1
+V_1
+U_2
+V_2
+
+## Correlaciones canónicas
+corr_u1_v1
+corr_u2_v2
+```
+
+$$
+U_1 = -0.3168206X_{1}^{({1})} \ \ \ 0.3622269X_{2}^{({1})} \\
+V_1 = -0.3647058X_{1}^{({2})} \ \ \ 0.0950627X_{2}^{({2})}\\
+U_2 = -0.1962489X_{1}^{({1})} \ \ \  -0.3016851X_{2}^{({1})}\\
+V_2 = -0.2262746X_{1}^{({2})} \ \ \  -0.385821X_{2}^{({2})}
+$$
+
+#### 3. En un estudio de pobreza, crimen y disuasión se reportaron observaciones de las variables aleatorias: Homicidios no primarios en $1973\left(X_{1}^{(1)}\right)$, homicidios primarios en $1973 X_{2}^{(1)}$, Severidad de los castigos en $1970 X_{1}^{(2)}$, certeza de castigo en 1970 $X_{2}^{(2)}$. La matriz de correlación muestral de las observaciones es la siguiente:
+$$
+\mathbf{R}=\left[\begin{array}{cccc}
+1 & & & \\
+0.615 & 1 & & \\
+-0.111 & -0.195 & 1 & \\
+-0.266 & -0.085 & -0.269 & 1
+\end{array}\right]
+$$
+Determine las variantes y las correlaciones canónicas muestrales y halle su correlación con las variables originales. Interprete los resultados.
+
+Creamos la matriz $R$
+```{r}
+R = matrix(data = c(1, 0.615, -0.111, -0.266,
+                    0.615, 1, -0.195, -0.085,
+                    -0.111, -0.195, 1, -0.269,
+                    -0.266, -0.085, -0.269, 1), nrow = 4, ncol = 4)
+R
+```
+
+Separamos la matriz $R$ en 4 secciones: $R_{11}$, $R_{12}$, $R_{21}$, $R_{22}$
+
+```{r}
+library(expm)
+R11 = matrix(data = c(1, 0.615, 0.615, 1 ), nrow = 2, ncol = 2)
+R12 = matrix(data = c(-0.111, -0.266,-0.195, -0.085), nrow = 2, ncol = 2)
+R21 = matrix(data = c(-0.111, -0.195, -0.266, -0.085 ), nrow = 2, ncol = 2)
+R22 = matrix(data = c(1, -0.269,-0.269, 1 ), nrow = 2, ncol = 2)
+
+R11Sqrt = solve(sqrtm(R11))
+R22inverse = solve(R22)
+R22Sqrt = solve(sqrtm(R22))
+R11inverse = solve(R11)
+
+A = R11Sqrt%*%R12%*%R22inverse%*%R21%*%R11Sqrt
+B = R22Sqrt%*%R12%*%R11inverse%*%R21%*%R22Sqrt
+```
+
+```{r}
+
+a1 = R11Sqrt%*%eigen(A)$vectors[,1]
+b1 = R22Sqrt%*%eigen(B)$vectors[,1]
+
+a2 = R11Sqrt%*%eigen(A)$vectors[,2]
+b2 = R22Sqrt%*%eigen(B)$vectors[,2]
+
+```
+
+Luego se tendria que hacer $U_1 = a^{1}X^{1}$ y $V_1 = b^{1}X^{2}$
