@@ -1,0 +1,66 @@
+---
+title: "wildfires_proyect"
+author: "Guillermo Ribero, Rafael Cabrera, Juan Camilo Rodriguez, David Melendez"
+date: "21/5/2022"
+output: html_document
+---
+
+```{r, echo=FALSE, results='hide'}
+install.packages("tidyverse")
+library(tidyverse)
+install.packages('fastDummies')
+library(fastDummies)
+```
+
+
+# Análisis Estadístico de Incendios Forestales
+### Análisis Estadístico de Datos
+
+```{r}
+
+
+head(data_fires)
+View(data_fires)
+```
+Regresión Lineal 
+
+```{r}
+df_dummies <- dummy_cols(data_fires, select_columns = c('state',   'discovery_month', 'vegetation_type', 'fire_cause'),
+           remove_selected_columns = TRUE)
+
+df_dummies <- subset(df_dummies, select = -c(discovery_year, fire_size_class, state_WY, discovery_month_Sep, vegetation_type_16, fire_cause_Structure))
+
+
+lm_fire_size = lm(formula = fire_size ~ ., data = df_dummies)
+summary(lm_fire_size)
+
+step(lm_fire_size, direction = "both", trace = 1)
+
+```
+
+```{r}
+n_df = length(df_dummies$fire_size)
+
+for (n in n_df){
+  ## disc_mth_Sep
+  fila = df_dummies[n,]
+  t = fila[70:81]
+  if  (identical(t,rep(0, length(t)))){
+    df_dummies[n, 81] = 1
+  }
+}
+table(df_dummies$discovery_month_Sep)
+
+for (n in n_df){
+  ## state_WY
+  fila = df_dummies[n,]
+  t = fila[20:69]
+  if  (identical(t,rep(0, length(t)))){
+    df_dummies[n, 69] = 1
+  }
+}
+
+table(df_dummies$state_WY)
+
+```
+
