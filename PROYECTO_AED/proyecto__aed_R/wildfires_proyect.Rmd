@@ -115,6 +115,26 @@ x<- x[-which(x$Prec_contained %in% outliers),]
 print("Borrando Prec_Contained")
 dim(x)
 
+###### Borrando los de distance_wstation_m
+outliers <- boxplot(x$distance_wstation_m, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$distance_wstation_m %in% outliers),]
+print("Borrando distance_wstation_m")
+dim(x)
+
+###### Borrando los de remoteness
+outliers <- boxplot(x$remoteness, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$remoteness %in% outliers),]
+print("Borrando remoteness")
+dim(x)
+
+###### Borrando los de fire_size
+outliers <- boxplot(x$fire_size, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$fire_size %in% outliers),]
+print("Borrando fire_size")
+dim(x)
 ```
 
 
@@ -124,10 +144,12 @@ Regresión Lineal
 #data_fires_bp = data_fires
 #data_fires = data_fires_bp
 data_fires = x
+
+View(df_dummies)
 df_dummies <- dummy_cols(data_fires, select_columns = c('state',   'discovery_month', 'vegetation_type', 'fire_cause'),
            remove_selected_columns = TRUE)
 
-df_dummies <- subset(df_dummies, select = -c(discovery_year, fire_size_class, state_WY, discovery_month_Sep, vegetation_type_16, fire_cause_Structure, fire_size))
+df_dummies <- subset(df_dummies, select = -c(discovery_year, fire_size_class, state_WY, discovery_month_Sep, vegetation_type_16, fire_size, fire_cause_Smoking))
 
 respuesta = data_fires$fire_size
 
