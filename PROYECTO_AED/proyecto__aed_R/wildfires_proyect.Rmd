@@ -1,0 +1,148 @@
+---
+title: "wildfires_proyect"
+author: "Guillermo Ribero, Rafael Cabrera, Juan Camilo Rodriguez, David Melendez"
+date: "21/5/2022"
+output: html_document
+---
+
+```{r, echo=FALSE, results='hide'}
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages('fastDummies')
+library(fastDummies)
+library(ggplot2)
+```
+
+
+# Análisis Estadístico de Incendios Forestales
+### Análisis Estadístico de Datos
+
+```{r}
+
+
+head(data_fires)
+View(data_fires)
+```
+
+Análisis Exploratio
+
+```{r}
+#df_boxplots <- subset(data_fires, select = -c(discovery_year, fire_size_class, state, discovery_month, vegetation_type, fire_cause))
+#View(df_boxplots)
+
+x = data_fires_bp
+outliers <- boxplot(x$Temp_pre_30, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Temp_pre_30 %in% outliers),]
+print("Borrando Temp_30")
+dim(x)
+outliers <- boxplot(x$Temp_pre_15, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Temp_pre_15 %in% outliers),]
+print("Borrando Temp_15")
+dim(x)
+outliers <- boxplot(x$Temp_pre_7, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Temp_pre_7 %in% outliers),]
+print("Borrando Temp_7")
+dim(x)
+outliers <- boxplot(x$Temp_contained, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Temp_contained %in% outliers),]
+print("Borrando Temp Contained")
+dim(x)
+###### Borrando los de Wind
+outliers <- boxplot(x$Wind_pre_30, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Wind_pre_30 %in% outliers),]
+print("Borrando Wind_30")
+dim(x)
+outliers <- boxplot(x$Wind_pre_15, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Wind_pre_15 %in% outliers),]
+print("Borrando Wind_15")
+dim(x)
+outliers <- boxplot(x$Wind_pre_7, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Wind_pre_7 %in% outliers),]
+print("Borrando Wind_7")
+dim(x)
+outliers <- boxplot(x$Wind_contained, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Wind_contained %in% outliers),]
+print("Borrando Wind_Contained")
+dim(x)
+###### Borrando los de Hum
+outliers <- boxplot(x$Hum_pre_30, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Hum_pre_30 %in% outliers),]
+print("Borrando Hum_30")
+dim(x)
+outliers <- boxplot(x$Hum_pre_15, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Hum_pre_15 %in% outliers),]
+print("Borrando Hum_15")
+dim(x)
+outliers <- boxplot(x$Hum_pre_7, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Hum_pre_7 %in% outliers),]
+print("Borrando Hum_7")
+dim(x)
+outliers <- boxplot(x$Hum_contained, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Hum_contained %in% outliers),]
+print("Borrando Hum_Contained")
+dim(x)
+###### Borrando los de Prec
+outliers <- boxplot(x$Prec_pre_30, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Prec_pre_30 %in% outliers),]
+print("Borrando Prec_30")
+dim(x)
+outliers <- boxplot(x$Prec_pre_15, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Prec_pre_15 %in% outliers),]
+print("Borrando Prec_15")
+dim(x)
+outliers <- boxplot(x$Prec_pre_7, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Prec_pre_7 %in% outliers),]
+print("Borrando Prec_7")
+dim(x)
+outliers <- boxplot(x$Prec_contained, plot=FALSE)$out
+#x<-x
+x<- x[-which(x$Prec_contained %in% outliers),]
+print("Borrando Prec_Contained")
+dim(x)
+
+```
+
+
+Regresión Lineal 
+
+```{r}
+#data_fires_bp = data_fires
+#data_fires = data_fires_bp
+data_fires = x
+df_dummies <- dummy_cols(data_fires, select_columns = c('state',   'discovery_month', 'vegetation_type', 'fire_cause'),
+           remove_selected_columns = TRUE)
+
+df_dummies <- subset(df_dummies, select = -c(discovery_year, fire_size_class, state_WY, discovery_month_Sep, vegetation_type_16, fire_cause_Structure, fire_size))
+
+respuesta = data_fires$fire_size
+
+lm_fire_size = lm(formula = respuesta ~ ., data = df_dummies)
+summary(lm_fire_size)
+```
+
+```{r}
+df_boxplots = subset(x, select = c(Temp_pre_30, Temp_pre_15, Temp_pre_7, Temp_contained)) 
+dim(df_boxplots)
+b = boxplot(df_boxplots)
+length(b$out)
+```
+
+```{r}
+#x_0088 = x
+```
+
