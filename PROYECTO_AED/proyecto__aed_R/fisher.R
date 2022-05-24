@@ -100,6 +100,11 @@ t = table(testing$genre, predicciones$class, dnn = c("Clase real", "Clase predic
 t
 aper = (length(testing$duration_ms)-tr(t))/length(testing$duration_ms)
 
+
+## Histograma de las predicciones según el discriminante lineal
+ldahist(data = predicciones$x[,2], g=testing$genre)
+
+
 # Now we will use Quadratic discriminant analysis - QDA
 
 # In contrast, QDA is recommended if the training set is very large, so that the
@@ -117,10 +122,3 @@ tr(confmatrix1)
 tr(confmatrix2)
 
 ###############################################
-
-unique(training$genre)
-
-library(MASS)
-library(heplots)
-
-# Clean dataset
