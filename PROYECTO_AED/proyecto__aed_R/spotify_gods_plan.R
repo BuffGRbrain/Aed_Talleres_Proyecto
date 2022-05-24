@@ -54,6 +54,8 @@ autoplot(Gods_plan)
 
 #######################
 ## PCA
+library(MASS)
+library(factoextra)
 mod_pca = prcomp(df_numeric_vals, scale. = TRUE)
 mod_pca$sdev
 summary(mod_pca)

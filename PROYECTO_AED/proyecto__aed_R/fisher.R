@@ -1,15 +1,15 @@
 library(tidyverse)
 
 library(readxl)
-songs_normalize <- read_excel("C:/Users/MEL/Desktop/Universidad/Analisis estadistico de datos/Aed_Talleres_Proyecto/PROYECTO_AED/proyecto__aed_R/songs_normalize.xlsx", 
+songs_normalize_genre_fixed <- read_excel("C:/Users/rafae/Desktop/AED_MACC/AED_Rafa_Juanca/Aed_Talleres_Proyecto/PROYECTO_AED/proyecto__aed_R/songs_normalize_genre_fixed.xlsx", 
                               col_types = c("text", "text", "numeric", 
                                             "text", "numeric", "numeric", "numeric", 
                                             "numeric", "numeric", "numeric", 
                                             "numeric", "numeric", "numeric", 
                                             "numeric", "numeric", "numeric", 
                                             "numeric", "text"))
-View(songs_normalize)
-dataset <- songs_normalize
+View(songs_normalize_genre_fixed)
+dataset <- songs_normalize_genre_fixed
 
 ###########
 #Creando la nueva variable categorica de popularity
@@ -17,8 +17,8 @@ dataset <- songs_normalize
 #Media de 31 a 60
 #Alta de 61-86
 
-column_pop = songs_normalize$popularity
-pop_cat = songs_normalize
+column_pop = songs_normalize_genre_fixed$popularity
+pop_cat = songs_normalize_genre_fixed
 contador = 0 #Indice para saber donde poner la nueva cat O PUEDO SIMPLEMENTE REEMPLAZAR
 for (i in column_pop){
   contador = contador+1;
@@ -34,17 +34,18 @@ for (i in column_pop){
   }
 }
 View(pop_cat)
-songs_normalize <- pop_cat
-dataset <- songs_normalize
-view(dataset)
+songs_normalize_genre_fixed <- pop_cat
+View(songs_normalize_genre_fixed)
+datasetWithoutCategorical <- songs_normalize_genre_fixed
+View(datasetWithoutCategorical)
 #Creando la nueva variable categorica de popularity
 ############
 
 # Remove Categoriccal variables from the dataset, save that new dataset
 datasetWithoutCategoricalFisherWithGenre <- dataset[,c(3,7,8,10,12:18)]
 datasetWithoutCategoricalFisherWithPopularity <- dataset[,c(3,6,7,8,10,12:17)]
-
-glimpse(songs_normalize)
+View(datasetWithoutCategoricalFisherWithGenre)
+glimpse(songs_normalize_genre_fixed)
 glimpse(datasetWithoutCategorical)
 
 # Exploratory Analysis
@@ -60,65 +61,21 @@ ggplot(dataset, aes(x = acousticness)) + geom_histogram()
 
 # ggplot(datasetBS, aes(x = year, y = popularity, color = factor(genre))) + geom_point()
 
-# PCA
-
-# We need to exclude the categorical variables because PCA works best without them
-# these categorical variables are: 
-# - Artist
-# - song
-# - explicit
-# - genre
-
-songDataSet.pca <- prcomp(datasetWithoutCategorical, center = TRUE,scale. = TRUE)
-summary(songDataSet.pca)
-
 
 # Fisher linear discriminant
 
-library(MASS)
-library(heplots)
-
-# Clean dataset
-dataSetWihtoutCategorical <- dataset[,c(3,7,8,10,12:17)]
-glimpse(dataSetWihtoutCategorical)
-
-
-bartlett.test(list(dataSetWihtoutCategorical$loudness, 
-                   dataSetWihtoutCategorical$energy, 
-                   dataSetWihtoutCategorical$acousticness))
-# After making the barlett test, we conclude that there is at least a difference
-# between the covariance matrices of each population
-
-# To fix this difference, we will make an adjustment in our database by multiplying
-# our sample with matrix P, where P is the matrix of eigenvectors of the covariance
-# matrix of the sample.
-glimpse(datasetWithoutCategoricalFisherWithGenre)
-glimpse(datasetWithoutCategoricalFisherWithPopularity)
-glimpse(dataSetWihtoutCategorical)
-dim(dataSetWihtoutCategorical)
-
-dataSetWihtoutCategorical.covarianceMatrix = cov(dataSetWihtoutCategorical)
-dataSetWihtoutCategorical.covarianceMatrix
-
-# Create eigen vector matrix
-vec = eigen(cov(dataSetWihtoutCategorical))$vectors
-p = cbind(vec[,1],vec[,2],vec[,3],vec[,4],vec[,5],vec[,6],vec[,7],vec[,8],vec[,9],vec[,10])
-dim(p)
-
-glimpse(dataSetWihtoutCategorical)
-adjusted_Sample = dataSetWihtoutCategorical %*% p
-dim(dataSetWihtoutCategorical)
-
-# Test if covariance matrices are equal
 # Partition dataSet (training and testing)
 set.seed(123)
-ind <- sample(2, nrow(datasetWithoutCategoricalButResponse),
+ind <- sample(2, nrow(datasetWithoutCategoricalFisherWithGenre),
               replace = TRUE,
               prob = c(0.75, 0.25))
 
-training <- datasetWithoutCategoricalButResponse[ind==1,]
-testing <- datasetWithoutCategoricalButResponse[ind==2,]
+training <- datasetWithoutCategoricalFisherWithGenre[ind==1,]
+testing <- datasetWithoutCategoricalFisherWithGenre[ind==2,]
 dim(testing)
+
+View(training)
+View(datasetWithoutCategoricalFisherWithGenre)
 
 # Things we might want to consider with LDA
 
@@ -129,13 +86,19 @@ dim(testing)
 # removing outliers from your data and standardize the variables to make their 
 # scale comparable.
 library(MASS)
+library(fBasics)
+
 modelLDA <- lda(genre~., data = training)
 modelLDA
 
 # Confusion matrix
-p2 <- predict(modelLDA, testing)$class
-confmatrix1 <- table(Predicted = p2, Actual = testing$genre)
-confmatrix1
+
+nuevas_obs = subset(testing, select = -c(genre))
+
+predicciones <- predict(object = modelLDA, newdata = nuevas_obs, method = "predictive")
+t = table(testing$genre, predicciones$class, dnn = c("Clase real", "Clase predicha"))
+t
+aper = (length(testing$duration_ms)-tr(t))/length(testing$duration_ms)
 
 # Now we will use Quadratic discriminant analysis - QDA
 
@@ -150,6 +113,14 @@ p3 <- predict(modelQDA, testing)$class
 confmatrix2 <- table(Predicted = p3, Actual = testing$vegetation_type)
 confmatrix2
 
-library(fBasics)
 tr(confmatrix1)
 tr(confmatrix2)
+
+###############################################
+
+unique(training$genre)
+
+library(MASS)
+library(heplots)
+
+# Clean dataset
