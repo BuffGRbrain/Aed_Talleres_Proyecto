@@ -7,13 +7,25 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse) #Pendiente ponerlo como taller 1 para que sea automático
-library(readxl)
-library(MASS)
-library(fBasics)
-library(corrplot)
-library(factoextra)
-library(ggfortify)
+#library(tidyverse) #Pendiente ponerlo como taller 1 para que #sea automático
+#library(readxl)
+#library(MASS)
+#library(fBasics)
+#library(corrplot)
+#library(factoextra)
+#library(ggfortify)
+
+packages = c("tidyverse","readxl","MASS","fBasics","corrplot","ggfortify","factoextra")
+
+packages.check <- lapply(
+  packages,
+  FUN = function(x){
+    if(!require(x,character.only = TRUE)){
+      install.packages(x, dependencies = TRUE)
+      library(x,character.only = TRUE)
+    }
+  }
+)
 
 songs_normalize <- read_excel("./songs_normalize_genre_fixed.xlsx", 
                               col_types = c("text", "text", "numeric",
@@ -245,7 +257,7 @@ modelLDA <- lda(genre~., data = training)
 modelLDA
 ```
 
-Matriz de Confunsión
+Matriz de Confunsión 
 ```{r, echo=FALSE, out.width="50%", fig.align="center"}
 # Confusion matrix
 
@@ -254,9 +266,11 @@ nuevas_obs = subset(testing, select = -c(genre))
 predicciones <- predict(object = modelLDA, newdata = nuevas_obs, method = "predictive")
 t = table(testing$genre, predicciones$class, dnn = c("Clase real", "Clase predicha"))
 Matriz_de_confusion = matrix(t, ncol = ncol(t), dimnames = dimnames(t))
-corrplot(Matriz_de_confusion,is.corr = FALSE ,type = "upper", order = "hclust", 
-         tl.col = "black", tl.srt = 45)
+corrplot(Matriz_de_confusion, is.corr = FALSE, col.lim = c(0, max(Matriz_de_confusion)), method = 'color', order = "hclust", 
+         tl.col = "black", tl.srt = 45, tl.pos = 'lt',
+         col = COL1('Blues'), cl.pos = 'b', addgrid.col = 'white', addCoef.col = 'grey50')
 ```
+<center> y = Clase Real, x = Clase Predicha </center>
 
 
 Tasa de Error Aparente
@@ -329,9 +343,11 @@ nuevas_obs = subset(testing, select = -c(genre))
 predicciones <- predict(object = modelLDAEqualV, newdata = nuevas_obs, method = "predictive")
 t = table(testing$genre, predicciones$class, dnn = c("Clase real", "Clase predicha"))
 Matriz_de_confusion = matrix(t, ncol = ncol(t), dimnames = dimnames(t))
-corrplot(Matriz_de_confusion,is.corr = FALSE ,type = "upper", order = "hclust", 
-         tl.col = "black", tl.srt = 45)
+corrplot(Matriz_de_confusion, is.corr = FALSE, col.lim = c(0, max(Matriz_de_confusion)), method = 'color', order = "hclust", 
+         tl.col = "black", tl.srt = 45, tl.pos = 'lt',
+         col = COL1('Blues'), cl.pos = 'b', addgrid.col = 'white', addCoef.col = 'grey50')
 ```
+<center> y = Clase Real, x = Clase Predicha </center>
 
 Tasa de Error Aparente
 ```{r, echo=FALSE}
@@ -431,9 +447,11 @@ nuevas_obs = subset(testing, select = -c(popularity))
 predicciones <- predict(object = modelLDAPopularity, newdata = nuevas_obs, method = "predictive")
 t = table(testing$popularity, predicciones$class, dnn = c("Clase real", "Clase predicha"))
 Matriz_de_confusion = matrix(t, ncol = ncol(t), dimnames = dimnames(t))
-corrplot(Matriz_de_confusion,is.corr = FALSE ,type = "upper", order = "hclust", 
-         tl.col = "black", tl.srt = 0)
+corrplot(Matriz_de_confusion, is.corr = FALSE, col.lim = c(0, max(Matriz_de_confusion)), method = 'color', order = "hclust", 
+         tl.col = "black", tl.srt = 45, tl.pos = 'lt',
+         col = COL1('Blues'), cl.pos = 'b', addgrid.col = 'white', addCoef.col = 'grey50')
 ```
+<center> y = Clase Real, x = Clase Predicha </center>
 
 Tasa de Error Aparente
 ```{r, echo=FALSE}
