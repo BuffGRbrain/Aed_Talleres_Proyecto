@@ -1,0 +1,129 @@
+---
+title: "spotify_gods_plan"
+author: "Guillermo Ribero, Rafael Cabrera, Juan Camilo Rodriguez, David Melendez"
+date: "5/24/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse) #Pendiente ponerlo como taller 1 para que sea automático
+library(readxl)
+library(MASS)
+library(corrplot)
+library(factoextra)
+songs_normalize <- read_excel("C:/Users/rafae/Desktop/AED_MACC/AED_Rafa_Juanca/Aed_Talleres_Proyecto/PROYECTO_AED/proyecto__aed_R/songs_normalize_genre_fixed.xlsx", 
+                              col_types = c("text", "text", "numeric",
+                                            "text", "numeric", "numeric","numeric", 
+                                            "numeric", "numeric","numeric", 
+                                            "numeric", "numeric","numeric", 
+                                            "numeric", "numeric","numeric", 
+                                            "numeric", "text"))
+df_numeric_vals = subset(songs_normalize, select = -c(artist, song, explicit, year, genre, mode, key))
+
+```
+
+## Descripción del proyecto 
+
+La era digital trajo consigo a las plataformas digitales tales como Spotify, Deezer, soundCloud y demás en las que los artistas indie buscan reconocimiento y dar su salto a la fama. Muchos para lograr su objetivo, le pagan a un intermediario como $tunecore_{[2]}$ el cual les ayuda a reducir el tiempo en que serán reconocidos y podrán hacer de su hobby una profesión. 
+
+Para contribuir a los crecientes artistas particularmente en la plataforma de spotify, la cual según orpheusaudioacademy$_{[3]}$ paga entre 3 y 5 dolarés por cada 1000 reproducciones, por lo que harémos un estudio de los datos de las mejores canciones de Spotify entre los años 2000 a 2019$_{[1]}$ con el fin de comprender mejor que características tienen las mejores canciones.
+
+## Base de datos usada
+
+Contiene las mejores 2000 canciones rankeadas entre los años 2000 a 2019, con 18 columnas que describen la canción y sus características tales como indices de popularidad, participación de la audiencia y demás. (idk about this)
+
+## Variables
+De las 18 variables disponibles en la base de datos usaremos las siguientes:
+
+### Categóricas 
+
+* Key: La clave en la que esta la canción, si no se detecta ninguna vale -1. NO LA USAREMOS
+ 
+* Popularity: Valor entre 0 y 100 que indica que tan popular esta canción, para una mayor facilidad en su uso, la modificamos y ahora es una v ariable que toma los valores 0,1 o 2 según su popularidad así: 0 ->0-30, 1 -> 31-60 y 2 60-100.
+ 
+* mode(de vd la usaremos?):
+ 
+* Genre: Genero de la canción, en algunos casos tenían varios así que solo dejamos el principal para poder realizar una buena agrupación.
+
+### Númericas
+
+* Duration_ms: Duración de la canción en milisegundos.
+ 
+* Danceability: Indice entre 0 y 1 que describe que tan bailable es una canción. (esta es la version resumida)
+ 
+* Energy: Indice entre 0 y 1que describe la intensidad y actividad de una canción.
+ 
+* Loudness: El volumen general de la canción medido en decibeles(db) y sus valores varían entre -60 a 0.
+ 
+* Speechines: Detecta la presencia de palabras habladas en una canción y varía entre 0 a 1. (No se si poner algo de su interpretación pues no c reo que sea necesario)
+ 
+* Acousticness: Un indice entre 0.0 y 1, que mide que tan acústica es una canción.
+ 
+* Instrumentalness: Indice entre 0.0 y 1 sobre que tan compuesta por solo instrumentos es una canción, si se acerca mucho a 1, la canción tiene m uy pocos vocales.
+ 
+* Liveness: Indice entre 0 y 1 de cuanto participa la audiencia en la canción.
+ 
+* Valence: Indice entre 0 y 1 que describe que tan positiva es una canción, es decir que tan alegre es una canción.
+ 
+* Tempo: El estimado del ritmo de la canción medido en beats por minuto o BTM por sus siglas en ingles.
+
+## Métodos usados CREO QUE SOBRA
+
+
+### Análisis exploratorio de los datos (Incluye PCA+gráficas)
+
+```{r, echo=FALSE, warning=FALSE}
+
+### Matriz de correlación
+cor_mt = cor(df_numeric_vals)
+corrplot(cor_mt, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+
+
+
+```
+
+
+```{r, echo=FALSE, warning=FALSE}
+## PCA
+mod_pca = prcomp(df_numeric_vals, scale. = TRUE)
+mod_pca$sdev
+summary(mod_pca)
+
+fviz_pca_var(mod_pca, 
+             col.var = "contrib",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"))
+
+```
+
+
+### Agrupamiento de los datos
+
+```{r, echo=FALSE, warning=FALSE}
+
+```
+
+### Regresión lineal
+
+```{r, echo=FALSE, warning=FALSE}
+linear_mod = lm(energy ~ ., data = df_numeric_vals)
+summary(linear_mod)
+
+step(linear_mod, direction = "both", trace = 1)
+```
+
+## Conclusiones
+
+* lista sin orden específico
+* s
+
+## Bibliografía
+
+1. KOVERHA, M., 2022. Top Hits Spotify from 2000-2019. [online] Kaggle.com. Available at: <https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019> [Accessed 25 May 2022].
+
+2. https://www.tunecore.com/
+
+3. https://www.orpheusaudioacademy.com/spotify-pay/#:~:text=You%20can%20expect%20to%20make,between%20%240.0033%20%2D%20%240.0054%20per%20stream.
+
+
