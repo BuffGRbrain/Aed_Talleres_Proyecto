@@ -1,5 +1,5 @@
 library(tidyverse)
-
+library(dplyr)
 library(readxl)
 songs_normalize_genre_fixed <- read_excel("C:/Users/MEL/Desktop/Universidad/Analisis estadistico de datos/Aed_Talleres_Proyecto/PROYECTO_AED/proyecto__aed_R/songs_normalize_genre_fixed.xlsx", 
                               col_types = c("text", "text", "numeric", 
@@ -8,7 +8,28 @@ songs_normalize_genre_fixed <- read_excel("C:/Users/MEL/Desktop/Universidad/Anal
                                             "numeric", "numeric", "numeric", 
                                             "numeric", "numeric", "numeric", 
                                             "numeric", "text"))
+complete_data_set <- songs_normalize_genre_fixed
+ggplot(complete_data_set, aes(x = explicit, fill = explicit)) +
+  geom_bar() +
+  scale_fill_manual(values = c("purple", "orange"))
+
+  
 View(songs_normalize_genre_fixed)
+
+complete_data_set %>%
+  filter(artist == "Eminem")
+
+datasetEminem <- complete_data_set %>% 
+  filter(explicit == "True") %>%
+  group_by(artist) %>%
+  count(artist) %>%
+  ungroup() %>%
+  filter(artist == "Eminem")
+
+ggplot(complete_data_set, aes(x = genre, y = popularity)) +
+  geom_point()
+ggplot(complete_data_set, aes(x = speechiness, y = popularity, color = factor(genre))) + geom_point()
+
 dataset <- songs_normalize_genre_fixed
 
 ###########

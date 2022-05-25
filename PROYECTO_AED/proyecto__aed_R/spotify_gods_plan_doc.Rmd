@@ -34,6 +34,7 @@ songs_normalize <- read_excel("./songs_normalize_genre_fixed.xlsx",
                                             "numeric", "numeric","numeric", 
                                             "numeric", "numeric","numeric", 
                                             "numeric", "text"))
+complete_data_set <- songs_normalize
 df_numeric_vals = subset(songs_normalize, select = -c(artist, song, explicit, year, genre, mode, key))
 
 
@@ -155,6 +156,43 @@ De las 18 variables disponibles en la base de datos usaremos las siguientes:
 
 ### Análisis exploratorio de los datos (Incluye PCA+gráficas)
 
+BarPlot canciones tipo 'explicit'
+
+```{r, echo = FALSE}
+library(tidyverse)
+ggplot(complete_data_set, aes(x = explicit, fill = explicit)) +
+  geom_bar() +
+  scale_fill_manual(values = c("purple", "orange"))
+```
+
+Segun este barplot, es mas probable lograr incluir una cancion entre los 'Top 100' al crear una cancion no 'explicit'
+
+
+```{r, echo = FALSE}
+datasetEminemKaty <- complete_data_set %>% 
+  dplyr::filter(artist %in% c("Eminem", "Katy Perry")) %>%
+  group_by(explicit) %>%
+  count(artist) %>%
+  ungroup()
+
+datasetEminemKaty
+```
+Katy Perry y Eminem, dos cantantes muy populares, sin embargo logran canciones en el 'Top 100' al utilizar un acercamiento distinto respecto a la variable 'explicit'
+
+```{r, echo = FALSE, fig.align="center"}
+
+ggplot(complete_data_set, aes(x = speechiness, y = popularity, color = factor(genre))) + geom_point()
+```
+Podemos observar una relacion interesante entre speechiness y popularity para hip hop, donde es necesario 
+utilizar valores mas altos de speechiness para lograr mayor popularidad. Esto no parece afectar otros generos
+
+```{r, echo = FALSE, fig.align="center"}
+
+ggplot(complete_data_set, aes(x = acousticness, y = popularity, color = factor(genre))) + geom_point()
+```
+Podemos observar como la mayoria de los datos estan agrupados con valores pequeños de acousticness.
+Se esta perdiendo el uso de musica acustica.
+
 #### Boxplots de las variables numéricas
 
 ```{r, echo=FALSE, fig.align="center"}
@@ -207,7 +245,7 @@ fviz_pca_var(mod_pca,
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"))
 
 ```
-
+Podemos observar como 'Loudness' y 'energy' aportan significativamente al componente principal 2. Si un data point tiene valores muy bajos en esas dos variables, estara ploteado en la izquiera del grafico, 
 -------
 
 #### Agrupamiento de los géneros musicales.
