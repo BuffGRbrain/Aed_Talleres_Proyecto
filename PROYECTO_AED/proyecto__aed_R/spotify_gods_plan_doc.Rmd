@@ -10,9 +10,12 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse) #Pendiente ponerlo como taller 1 para que sea automático
 library(readxl)
 library(MASS)
+library(fBasics)
 library(corrplot)
 library(factoextra)
-songs_normalize <- read_excel("C:/Users/rafae/Desktop/AED_MACC/AED_Rafa_Juanca/Aed_Talleres_Proyecto/PROYECTO_AED/proyecto__aed_R/songs_normalize_genre_fixed.xlsx", 
+library(ggfortify)
+
+songs_normalize <- read_excel("./songs_normalize_genre_fixed.xlsx", 
                               col_types = c("text", "text", "numeric",
                                             "text", "numeric", "numeric","numeric", 
                                             "numeric", "numeric","numeric", 
@@ -21,22 +24,90 @@ songs_normalize <- read_excel("C:/Users/rafae/Desktop/AED_MACC/AED_Rafa_Juanca/A
                                             "numeric", "text"))
 df_numeric_vals = subset(songs_normalize, select = -c(artist, song, explicit, year, genre, mode, key))
 
+
+###############################################################
+
+## Fisher Setup
+
+songs_normalize_genre_fixed <- read_excel("./songs_normalize_genre_fixed.xlsx", 
+                              col_types = c("text", "text", "numeric", 
+                                            "text", "numeric", "numeric", "numeric", 
+                                            "numeric", "numeric", "numeric", 
+                                            "numeric", "numeric", "numeric", 
+                                            "numeric", "numeric", "numeric", 
+                                            "numeric", "text"))
+
+#View(songs_normalize_genre_fixed)
+dataset <- songs_normalize_genre_fixed
+
+
+###########
+#Creando la nueva variable categorica de popularity
+# Baja de 0 a 30 
+#Media de 31 a 60
+#Alta de 61-86
+
+column_pop = songs_normalize_genre_fixed$popularity
+pop_cat = songs_normalize_genre_fixed
+contador = 0 #Indice para saber donde poner la nueva cat O PUEDO SIMPLEMENTE REEMPLAZAR
+for (i in column_pop){
+  contador = contador+1;
+  if (i<=30){
+    #Agregar fila con popularidad baja que es un 0
+    pop_cat$popularity[contador] = 0
+  }else if(i<=60){#Pues como no entro en el anterior ya es mayor a 30 
+    #Agregar fila con popularidad mediaque es un 1
+    pop_cat$popularity[contador] = 1
+  }else{#es decir es mayor a 60 
+    #Agregar fila con popularidad alta que es un 2
+    pop_cat$popularity[contador] = 2
+  }
+}
+#View(pop_cat)
+songs_normalize_genre_fixed <- pop_cat
+#View(songs_normalize_genre_fixed)
+datasetWithoutCategorical <- songs_normalize_genre_fixed
+#View(datasetWithoutCategorical)
+
+# Remove Categoriccal variables from the dataset, save that new dataset
+datasetWithoutCategoricalFisherWithGenre <- dataset[,c(3,7,8,10,12:18)]
+datasetWithoutCategoricalFisherWithPopularity <- dataset[,c(3,6,7,8,10,12:17)]
+#View(datasetWithoutCategoricalFisherWithGenre)
+#glimpse(songs_normalize_genre_fixed)
+#glimpse(datasetWithoutCategorical)
+
 ```
 
-## Descripción del proyecto 
+-------
+
+### Tabla de Contenidos
+
+1. [Descripción del proyecto](#descripcion)
+2. [Base de datos utilizada](#base-de-datos)
+3. [Variables](#Variables)
+
+
+-------
+
+
+### <a name="descripcion"></a> Descripción del proyecto 
 
 La era digital trajo consigo a las plataformas digitales tales como Spotify, Deezer, soundCloud y demás en las que los artistas indie buscan reconocimiento y dar su salto a la fama. Muchos para lograr su objetivo, le pagan a un intermediario como $tunecore_{[2]}$ el cual les ayuda a reducir el tiempo en que serán reconocidos y podrán hacer de su hobby una profesión. 
 
 Para contribuir a los crecientes artistas particularmente en la plataforma de spotify, la cual según orpheusaudioacademy$_{[3]}$ paga entre 3 y 5 dolarés por cada 1000 reproducciones, por lo que harémos un estudio de los datos de las mejores canciones de Spotify entre los años 2000 a 2019$_{[1]}$ con el fin de comprender mejor que características tienen las mejores canciones.
 
-## Base de datos usada
+-------
+
+### <a name="base-de-datos"></a> Base de datos utilizada
 
 Contiene las mejores 2000 canciones rankeadas entre los años 2000 a 2019, con 18 columnas que describen la canción y sus características tales como indices de popularidad, participación de la audiencia y demás. (idk about this)
 
-## Variables
+-------
+
+### <a name="Variables"></a> Variables 
 De las 18 variables disponibles en la base de datos usaremos las siguientes:
 
-### Categóricas 
+#### Categóricas 
 
 * Key: La clave en la que esta la canción, si no se detecta ninguna vale -1. NO LA USAREMOS
  
@@ -46,7 +117,7 @@ De las 18 variables disponibles en la base de datos usaremos las siguientes:
  
 * Genre: Genero de la canción, en algunos casos tenían varios así que solo dejamos el principal para poder realizar una buena agrupación.
 
-### Númericas
+#### Númericas
 
 * Duration_ms: Duración de la canción en milisegundos.
  
@@ -68,24 +139,52 @@ De las 18 variables disponibles en la base de datos usaremos las siguientes:
  
 * Tempo: El estimado del ritmo de la canción medido en beats por minuto o BTM por sus siglas en ingles.
 
-## Métodos usados CREO QUE SOBRA
-
+-------
 
 ### Análisis exploratorio de los datos (Incluye PCA+gráficas)
 
-```{r, echo=FALSE, warning=FALSE}
+#### Boxplots de las variables numéricas
+
+```{r, echo=FALSE, fig.align="center"}
+######## Grafico de boxplots de variables numéricas
+par(mfrow = c(3,4))
+boxplot(df_numeric_vals$duration_ms, outline = FALSE)
+title("Duración en ms")
+boxplot(df_numeric_vals$popularity, outline = FALSE)
+title("Indice de popularidad")
+boxplot(df_numeric_vals$danceability, outline = FALSE)
+title("Indice de bailabilidad")
+boxplot(df_numeric_vals$energy, outline = FALSE)
+title("Indice de energia")
+boxplot(df_numeric_vals$loudness, outline = FALSE)
+title("Indice de loudness")
+boxplot(df_numeric_vals$speechiness, outline = FALSE)
+title("Indice de speechines")
+boxplot(df_numeric_vals$acousticness, outline = FALSE)
+title("Indice de acousticness")
+boxplot(df_numeric_vals$instrumentalness, outline = FALSE)
+title("Indice de instrumentalidad")
+boxplot(df_numeric_vals$liveness, outline = FALSE)
+title("Indice de vida")
+boxplot(df_numeric_vals$valence, outline = FALSE)
+title("Indice de valance")
+boxplot(df_numeric_vals$tempo, outline = FALSE)
+title("Indice de tempo")
+```
+
+
+#### Matriz de correlación de las variables numéricas
+```{r, echo=FALSE, warning=FALSE, out.width="50%", fig.align="center"}
 
 ### Matriz de correlación
 cor_mt = cor(df_numeric_vals)
 corrplot(cor_mt, type = "upper", order = "hclust", 
          tl.col = "black", tl.srt = 45)
 
-
-
 ```
 
-
-```{r, echo=FALSE, warning=FALSE}
+#### PCA de las variables numéricas
+```{r, echo=FALSE, warning=FALSE, out.width="60%", fig.align="center"}
 ## PCA
 mod_pca = prcomp(df_numeric_vals, scale. = TRUE)
 mod_pca$sdev
@@ -97,21 +196,283 @@ fviz_pca_var(mod_pca,
 
 ```
 
+-------
 
-### Agrupamiento de los datos
+#### Agrupamiento de los géneros musicales.
+Uno de los principales objetivos es predecir a qué género músical pertenece una canción basado en las siguientes variables numéricas:
 
-```{r, echo=FALSE, warning=FALSE}
+* Duration_ms
+* Danceability
+* Energy
+* Loudness
+* Speechines
+* Acousticness
+* Instrumentalness
+* Liveness
+* Valence
+* Tempo
+
+##### Discriminante lineal de Fisher con datos puros
+
+Es este punto es necesario aclarar que una de las condiciones para utilizar el discriminante de Fisher para agrupar observaciones es la homocedasticidad. Sin embargo, se hizo la prueba de la función $lda$ de R y se obtuvo el siguiente resultado. 
+
+```{r,echo=FALSE,warning=FALSE}
+# Fisher linear discriminant
+
+# Partition dataSet (training and testing)
+set.seed(123)
+ind <- sample(2, nrow(datasetWithoutCategoricalFisherWithGenre),
+              replace = TRUE,
+              prob = c(0.75, 0.25))
+
+training <- datasetWithoutCategoricalFisherWithGenre[ind==1,]
+testing <- datasetWithoutCategoricalFisherWithGenre[ind==2,]
+#dim(testing)
+
+#View(training)
+#View(datasetWithoutCategoricalFisherWithGenre)
+
+# Things we might want to consider with LDA
+
+# Inspecting the univariate distributions of each variable and make sure 
+# that they are normally distribute. If not, you can transform them using log 
+# and root for exponential distributions and Box-Cox for skewed distributions.
+
+# removing outliers from your data and standardize the variables to make their 
+# scale comparable.
+
+modelLDA <- lda(genre~., data = training)
+modelLDA
+```
+
+Matriz de Confunsión
+```{r, echo=FALSE, out.width="50%", fig.align="center"}
+# Confusion matrix
+
+nuevas_obs = subset(testing, select = -c(genre))
+
+predicciones <- predict(object = modelLDA, newdata = nuevas_obs, method = "predictive")
+t = table(testing$genre, predicciones$class, dnn = c("Clase real", "Clase predicha"))
+Matriz_de_confusion = matrix(t, ncol = ncol(t), dimnames = dimnames(t))
+corrplot(Matriz_de_confusion,is.corr = FALSE ,type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+```
+
+
+Tasa de Error Aparente
+```{r, echo=FALSE}
+aper = (length(testing$duration_ms)-tr(t))/length(testing$duration_ms)
+aper
+```
+
+Del resultado anterior se puede concluir que el modelo del discriminante lineal de Fisher predice errórneamente el 38.55% de las veces, resultado bastante satisfactorio dado la gran diversidad de valores para cada variable que puede existir dentro de cada género.
+
+
+-------
+
+
+##### Discriminante lineal de Fisher con datos corregidos
+Con el fin de comprobar la validez del modelo anterior, se hizo el siguiente arreglo de los datos:
+
+Sea $P = [e_1, e_2, ..., e_p]$.
+Se reemplaza $\textbf{X} = P\textbf{X}$ donde $\textbf{X}$ es la matriz de observaciones inicial. De esta forma, el resultado del discriminante lineal de Fisher para la variables $genre$ es:
+
+```{r, include=FALSE}
+# Remove all the categorical variables from the dataset
+datasetWithoutCategorical <- dataset[,c(3,7,8,10,12:17)]
+
+datasetWithoutCategorical <- matrix(unlist(datasetWithoutCategorical), ncol = 10, nrow = 1971)
+
+
+# Get the eigenvectors of the dataset without the categorical values 
+datasetWithoutCategorical.eigens <- eigen(cov(datasetWithoutCategorical))$vectors
+dim(datasetWithoutCategorical.eigens)
+
+FixedDataSetWithEqualCovariances <- datasetWithoutCategorical %*% datasetWithoutCategorical.eigens
+dim(FixedDataSetWithEqualCovariances)
+glimpse(FixedDataSetWithEqualCovariances)
+
+# Convert it to dataframe
+FixedDataSetWithEqualCovariances <- as.data.frame(FixedDataSetWithEqualCovariances)
+
+# Add genre variable to the new fixed dataset
+FixedDataSetWithEqualCovariancesGenre = cbind(FixedDataSetWithEqualCovariances,genre = datasetWithoutCategoricalFisherWithGenre$genre) 
+
+FixedDataSetWithEqualCovariancesGenre = as.data.frame(FixedDataSetWithEqualCovariancesGenre)
+glimpse(FixedDataSetWithEqualCovariancesGenre)
+```
+
+```{r, echo=FALSE}
+# Fisher linear discriminant
+
+# Partition dataSet (training and testing)
+set.seed(123)
+ind <- sample(2, nrow(FixedDataSetWithEqualCovariancesGenre),
+              replace = TRUE,
+              prob = c(0.75, 0.25))
+
+training <- FixedDataSetWithEqualCovariancesGenre[ind==1,]
+testing <- FixedDataSetWithEqualCovariancesGenre[ind==2,]
+
+
+modelLDAEqualV <- lda(genre~., data = training)
+modelLDAEqualV
 
 ```
 
-### Regresión lineal
+Matriz de confusión
+```{r, echo=FALSE, out.width="50%", fig.align="center"}
+# Confusion matrix
 
-```{r, echo=FALSE, warning=FALSE}
+nuevas_obs = subset(testing, select = -c(genre))
+
+predicciones <- predict(object = modelLDAEqualV, newdata = nuevas_obs, method = "predictive")
+t = table(testing$genre, predicciones$class, dnn = c("Clase real", "Clase predicha"))
+Matriz_de_confusion = matrix(t, ncol = ncol(t), dimnames = dimnames(t))
+corrplot(Matriz_de_confusion,is.corr = FALSE ,type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+```
+
+Tasa de Error Aparente
+```{r, echo=FALSE}
+aper = (length(testing$genre)-tr(t))/length(testing$genre)
+aper
+```
+Nótese que los resultados con los datos corregidos son equivalentes a los resultados con los datos puros, razón por la cual se considera que la función $lda$ de R realiza un ajuste de manera automática.
+
+
+-------
+
+
+#### Agrupamiento según nivel de popularidad
+Por otro lado, uno de los principales objetivos de los artistas es ser muy populares, esto por esto que creó una nueva variable categórica $popularity$ basada en un índice de popularidad por canción de la siguiente manera:
+
+| popularity | Nivel de popularidad | valor índice $i$ |
+|:----------:|:----------:|:----------:|
+| 0 | Baja | $0\leq i \leq 30$ |
+| 1 | Media | $31\leq i \leq 60$ |
+| 2 | Alta | $61\leq i \leq 86$ |
+
+Posterior a esto, se realizó un modelo de discriminación lineal de Fisher que arrojó los siguientes resultados:
+
+```{r, include=FALSE}
+songs_normalize_genre_fixed <- read_excel("./songs_normalize_genre_fixed.xlsx", 
+                                          col_types = c("text", "text", "numeric", 
+                                                        "text", "numeric", "numeric", "numeric", 
+                                                        "numeric", "numeric", "numeric", 
+                                                        "numeric", "numeric", "numeric", 
+                                                        "numeric", "numeric", "numeric", 
+                                                        "numeric", "text"))
+dataset <- songs_normalize_genre_fixed
+
+###########
+#Creando la nueva variable categorica de popularity
+# Baja de 0 a 30 
+#Media de 31 a 60
+#Alta de 61-86
+
+column_pop = songs_normalize_genre_fixed$popularity
+pop_cat = songs_normalize_genre_fixed
+contador = 0 #Indice para saber donde poner la nueva cat O PUEDO SIMPLEMENTE REEMPLAZAR
+for (i in column_pop){
+  contador = contador+1;
+  if (i<=30){
+    #Agregar fila con popularidad baja que es un 0
+    pop_cat$popularity[contador] = 0
+  }else if(i<=60){#Pues como no entro en el anterior ya es mayor a 30 
+    #Agregar fila con popularidad mediaque es un 1
+    pop_cat$popularity[contador] = 1
+  }else{#es decir es mayor a 60 
+    #Agregar fila con popularidad alta que es un 2
+    pop_cat$popularity[contador] = 2
+  }
+}
+songs_normalize_genre_fixed <- pop_cat
+dataset = songs_normalize_genre_fixed
+datasetWithoutCategorical <- songs_normalize_genre_fixed
+#Creando la nueva variable categorica de popularity
+############
+
+# Remove Categoriccal variables from the dataset, save that new dataset
+datasetWithoutCategoricalFisherWithGenre <- dataset[,c(3,7,8,10,12:18)]
+datasetWithoutCategoricalFisherWithPopularity <- dataset[,c(3,6,7,8,10,12:17)]
+```
+
+
+```{r, echo=FALSE}
+# Partition dataSet (training and testing)
+set.seed(123)
+ind <- sample(2, nrow(datasetWithoutCategoricalFisherWithPopularity),
+              replace = TRUE,
+              prob = c(0.75, 0.25))
+
+training <- datasetWithoutCategoricalFisherWithPopularity[ind==1,]
+testing <- datasetWithoutCategoricalFisherWithPopularity[ind==2,]
+
+# Things we might want to consider with LDA
+
+# Inspecting the univariate distributions of each variable and make sure 
+# that they are normally distribute. If not, you can transform them using log 
+# and root for exponential distributions and Box-Cox for skewed distributions.
+
+# removing outliers from your data and standardize the variables to make their 
+# scale comparable.
+
+modelLDAPopularity <- lda(popularity~., data = training)
+modelLDAPopularity
+```
+
+Matriz de confusión
+```{r, echo=FALSE, out.width="40%", fig.align="center"}
+# Confusion matrix
+
+nuevas_obs = subset(testing, select = -c(popularity))
+
+predicciones <- predict(object = modelLDAPopularity, newdata = nuevas_obs, method = "predictive")
+t = table(testing$popularity, predicciones$class, dnn = c("Clase real", "Clase predicha"))
+Matriz_de_confusion = matrix(t, ncol = ncol(t), dimnames = dimnames(t))
+corrplot(Matriz_de_confusion,is.corr = FALSE ,type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 0)
+```
+
+Tasa de Error Aparente
+```{r, echo=FALSE}
+aper = (length(testing$duration_ms)-tr(t))/length(testing$duration_ms)
+aper
+```
+Del resultado anterior se puede concluir que el modelo clasifica erróneamente únicamente el 33.19% de las veces. Resultado satisfactorio puesto que ayuda a estimar qué tan popular será una canción basado en sus características.
+
+
+-------
+
+
+#### Regresión lineal
+
+Con el fin de estimar el índice de la variable $energy$, se realizó el modelo de regresión lineal $linear\_mod$, sin embargo, en este se encontraron muchas variables que no aportaba nada al modelo. Esto por esto que se utilizó el algoritmo $stepwise$ para encontrar el mejor modelo.
+```{r, results='hide', warning=FALSE}
 linear_mod = lm(energy ~ ., data = df_numeric_vals)
 summary(linear_mod)
 
 step(linear_mod, direction = "both", trace = 1)
 ```
+
+
+Basado en los resultados del algoritmo $stepwise$, se procedió a realizar el modelo $lm\_energy$, que produjó los siguientes resultados:
+```{r}
+#### Linear Model para variable respuesta energy
+lm_energy = lm(formula = energy ~ danceability + loudness + acousticness + 
+                 instrumentalness + liveness + valence + tempo, data = df_numeric_vals)
+summary(lm_energy)
+```
+
+#### Validación de supuestos del modelo
+
+```{r, echo=FALSE, warning=FALSE, out.width="50%", fig.align="center"}
+autoplot(lm_energy)
+```
+
+-------
+
 
 ## Conclusiones
 

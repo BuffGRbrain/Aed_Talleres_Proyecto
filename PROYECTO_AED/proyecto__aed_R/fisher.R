@@ -51,7 +51,7 @@ glimpse(datasetWithoutCategorical)
 # Exploratory Analysis
 ggplot(dataset, aes(x = loudness, y = popularity)) +
   geom_point() + 
-  facet_wrap(~year)
+  facet_wrap(~genre)
 
 ggplot(dataset, aes(x = acousticness, y = energy)) + geom_point()
 ggplot(dataset, aes(x = acousticness)) + geom_histogram()
