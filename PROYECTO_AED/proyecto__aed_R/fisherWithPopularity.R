@@ -2,12 +2,12 @@ library(tidyverse)
 
 library(readxl)
 songs_normalize_genre_fixed <- read_excel("C:/Users/MEL/Desktop/Universidad/Analisis estadistico de datos/Aed_Talleres_Proyecto/PROYECTO_AED/proyecto__aed_R/songs_normalize_genre_fixed.xlsx", 
-                              col_types = c("text", "text", "numeric", 
-                                            "text", "numeric", "numeric", "numeric", 
-                                            "numeric", "numeric", "numeric", 
-                                            "numeric", "numeric", "numeric", 
-                                            "numeric", "numeric", "numeric", 
-                                            "numeric", "text"))
+                                          col_types = c("text", "text", "numeric", 
+                                                        "text", "numeric", "numeric", "numeric", 
+                                                        "numeric", "numeric", "numeric", 
+                                                        "numeric", "numeric", "numeric", 
+                                                        "numeric", "numeric", "numeric", 
+                                                        "numeric", "text"))
 View(songs_normalize_genre_fixed)
 dataset <- songs_normalize_genre_fixed
 
@@ -36,6 +36,7 @@ for (i in column_pop){
 View(pop_cat)
 songs_normalize_genre_fixed <- pop_cat
 View(songs_normalize_genre_fixed)
+dataset = songs_normalize_genre_fixed
 datasetWithoutCategorical <- songs_normalize_genre_fixed
 View(datasetWithoutCategorical)
 #Creando la nueva variable categorica de popularity
@@ -45,6 +46,7 @@ View(datasetWithoutCategorical)
 datasetWithoutCategoricalFisherWithGenre <- dataset[,c(3,7,8,10,12:18)]
 datasetWithoutCategoricalFisherWithPopularity <- dataset[,c(3,6,7,8,10,12:17)]
 View(datasetWithoutCategoricalFisherWithGenre)
+View(datasetWithoutCategoricalFisherWithPopularity)
 glimpse(songs_normalize_genre_fixed)
 glimpse(datasetWithoutCategorical)
 
@@ -66,16 +68,16 @@ ggplot(dataset, aes(x = acousticness)) + geom_histogram()
 
 # Partition dataSet (training and testing)
 set.seed(123)
-ind <- sample(2, nrow(datasetWithoutCategoricalFisherWithGenre),
+ind <- sample(2, nrow(datasetWithoutCategoricalFisherWithPopularity),
               replace = TRUE,
               prob = c(0.75, 0.25))
 
-training <- datasetWithoutCategoricalFisherWithGenre[ind==1,]
-testing <- datasetWithoutCategoricalFisherWithGenre[ind==2,]
+training <- datasetWithoutCategoricalFisherWithPopularity[ind==1,]
+testing <- datasetWithoutCategoricalFisherWithPopularity[ind==2,]
 dim(testing)
 
 View(training)
-View(datasetWithoutCategoricalFisherWithGenre)
+View(datasetWithoutCategoricalFisherWithPopularity)
 
 # Things we might want to consider with LDA
 
@@ -88,21 +90,21 @@ View(datasetWithoutCategoricalFisherWithGenre)
 library(MASS)
 library(fBasics)
 
-modelLDA <- lda(genre~., data = training)
-modelLDA
+modelLDAPopularity <- lda(popularity~., data = training)
+modelLDAPopularity
 
 # Confusion matrix
 
-nuevas_obs = subset(testing, select = -c(genre))
+nuevas_obs = subset(testing, select = -c(popularity))
 
-predicciones <- predict(object = modelLDA, newdata = nuevas_obs, method = "predictive")
-t = table(testing$genre, predicciones$class, dnn = c("Clase real", "Clase predicha"))
+predicciones <- predict(object = modelLDAPopularity, newdata = nuevas_obs, method = "predictive")
+t = table(testing$popularity, predicciones$class, dnn = c("Clase real", "Clase predicha"))
 t
 aper = (length(testing$duration_ms)-tr(t))/length(testing$duration_ms)
-
+aper
 
 ## Histograma de las predicciones según el discriminante lineal
-ldahist(data = predicciones$x[,2], g=testing$genre)
+ldahist(data = predicciones$x[,1], g=testing$popularity)
 
 
 # Now we will use Quadratic discriminant analysis - QDA
@@ -139,27 +141,27 @@ glimpse(FixedDataSetWithEqualCovariances)
 
 typeof(FixedDataSetWithEqualCovariances)
 # Add genre variable to the new fixed dataset
-FixedDataSetWithEqualCovariancesGenre = cbind(FixedDataSetWithEqualCovariances,genre = datasetWithoutCategoricalFisherWithGenre$genre) 
+FixedDataSetWithEqualCovariancesGenre = cbind(FixedDataSetWithEqualCovariances,popularity = datasetWithoutCategoricalFisherWithPopularity$popularity) 
 glimpse(FixedDataSetWithEqualCovariancesGenre)
 
-FixedDataSetWithEqualCovariancesGenre = as.data.frame(FixedDataSetWithEqualCovariancesGenre)
-glimpse(FixedDataSetWithEqualCovariancesGenre)
+FixedDataSetWithEqualCovariancespopularity = as.data.frame(FixedDataSetWithEqualCovariancespopularity)
+glimpse(FixedDataSetWithEqualCovariancespopularity)
 
 # Fisher linear discriminant
 
 # Partition dataSet (training and testing)
 set.seed(123)
-ind <- sample(2, nrow(FixedDataSetWithEqualCovariancesGenre),
+ind <- sample(2, nrow(FixedDataSetWithEqualCovariancespopularity),
               replace = TRUE,
               prob = c(0.75, 0.25))
 
-training <- FixedDataSetWithEqualCovariancesGenre[ind==1,]
-testing <- FixedDataSetWithEqualCovariancesGenre[ind==2,]
+training <- FixedDataSetWithEqualCovariancespopularity[ind==1,]
+testing <- FixedDataSetWithEqualCovariancespopularity[ind==2,]
 dim(testing)
 dim(training)
 
 View(training)
-View(FixedDataSetWithEqualCovariancesGenre)
+View(FixedDataSetWithEqualCovariancespopularity)
 
 # Things we might want to consider with LDA
 
@@ -172,19 +174,19 @@ View(FixedDataSetWithEqualCovariancesGenre)
 library(MASS)
 library(fBasics)
 
-modelLDAEqualV <- lda(genre~., data = training)
+modelLDAEqualV <- lda(popularity~., data = training)
 modelLDAEqualV
 
 # Confusion matrix
 
-nuevas_obs = subset(testing, select = -c(genre))
+nuevas_obs = subset(testing, select = -c(popularity))
 
 predicciones <- predict(object = modelLDAEqualV, newdata = nuevas_obs, method = "predictive")
-t = table(testing$genre, predicciones$class, dnn = c("Clase real", "Clase predicha"))
+t = table(testing$popularity, predicciones$class, dnn = c("Clase real", "Clase predicha"))
 t
-aper = (length(testing$genre)-tr(t))/length(testing$genre)
+aper = (length(testing$popularity)-tr(t))/length(testing$popularity)
 
 
 ## Histograma de las predicciones según el discriminante lineal
-ldahist(data = predicciones$x[,2], g=testing$genre)
+ldahist(data = predicciones$x[,2], g=testing$popularity)
 par(mar=c(1, 1, 1, 1))
