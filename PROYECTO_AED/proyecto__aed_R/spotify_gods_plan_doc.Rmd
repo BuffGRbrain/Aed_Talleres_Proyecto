@@ -98,7 +98,17 @@ datasetWithoutCategoricalFisherWithPopularity <- dataset[,c(3,6,7,8,10,12:17)]
 1. [Descripción del proyecto](#descripcion)
 2. [Base de datos utilizada](#base-de-datos)
 3. [Variables](#Variables)
-
+4. [Análisis exploratorio de los datos](#Analisis-exploratorio)
+4,1. [Boxplots](#Boxplots)
+4,2. [Matriz de correlación](#Matriz-de-correlacion)
+4.2. [PCA](#PCA)
+5. [Agrupamiento de los géneros musicales](#Agrupamiento-de-los-generos-musicales)
+5,1. [Discriminante lineal de Fisher con datos puros](#Discriminante-lineal-de-Fisher-con-datos-puros)
+5,2. [Discriminante lineal de Fisher con datos corregidos](#Discriminante-lineal-de-Fisher-con-datos-corregidos)
+5,3. [Agrupamiento según nivel de popularidad](#Agrupamiento-segun-nivel-de-popularidad)
+6. [Regresión lineal](#Regresion-lineal)
+7. [Conclusiones](#Conclusiones)
+8. [Bibliografía](#Bibliografia)
 
 -------
 
@@ -154,7 +164,7 @@ De las 18 variables disponibles en la base de datos usaremos las siguientes:
 
 -------
 
-### Análisis exploratorio de los datos (Incluye PCA+gráficas)
+### <a name="Analisis-exploratorio"></a> Análisis exploratorio de los datos (Incluye PCA+gráficas)
 
 BarPlot canciones tipo 'explicit'
 
@@ -193,7 +203,7 @@ ggplot(complete_data_set, aes(x = acousticness, y = popularity, color = factor(g
 Podemos observar como la mayoria de los datos estan agrupados con valores pequeños de acousticness.
 Se esta perdiendo el uso de musica acustica.
 
-#### Boxplots de las variables numéricas
+#### <a name="Boxplots"></a> Boxplots de las variables numéricas
 
 ```{r, echo=FALSE, fig.align="center"}
 ######## Grafico de boxplots de variables numéricas
@@ -223,7 +233,7 @@ title("Indice de tempo")
 ```
 
 
-#### Matriz de correlación de las variables numéricas
+#### <a name="Matriz-de-correlacion"></a> Matriz de correlación de las variables numéricas
 ```{r, echo=FALSE, warning=FALSE, out.width="50%", fig.align="center"}
 
 ### Matriz de correlación
@@ -233,7 +243,7 @@ corrplot(cor_mt, type = "upper", order = "hclust",
 
 ```
 
-#### PCA de las variables numéricas
+#### <a name="PCA"></a> PCA de las variables numéricas
 ```{r, echo=FALSE, warning=FALSE, out.width="60%", fig.align="center"}
 ## PCA
 mod_pca = prcomp(df_numeric_vals, scale. = TRUE)
@@ -251,7 +261,7 @@ La escala de contribucion indica que tanto una variable contribuye al componente
 
 -------
 
-#### Agrupamiento de los géneros musicales.
+#### <a name="Agrupamiento-de-los-generos-musicales"></a> Agrupamiento de los géneros musicales.
 Uno de los principales objetivos es predecir a qué género músical pertenece una canción basado en las siguientes variables numéricas:
 
 * Duration_ms
@@ -265,7 +275,7 @@ Uno de los principales objetivos es predecir a qué género músical pertenece u
 * Valence
 * Tempo
 
-##### Discriminante lineal de Fisher con datos puros
+##### <a name="Discriminante-lineal-de-Fisher-con-datos-puros"></a> Discriminante lineal de Fisher con datos puros
 
 Es este punto es necesario aclarar que una de las condiciones para utilizar el discriminante de Fisher para agrupar observaciones es la homocedasticidad. Sin embargo, se hizo la prueba de la función $lda$ de R y se obtuvo el siguiente resultado. 
 
@@ -326,7 +336,7 @@ Del resultado anterior se puede concluir que el modelo del discriminante lineal 
 -------
 
 
-##### Discriminante lineal de Fisher con datos corregidos
+##### <a name="Discriminante-lineal-de-Fisher-con-datos-corregidos"></a> Discriminante lineal de Fisher con datos corregidos
 Con el fin de comprobar la validez del modelo anterior, se hizo el siguiente arreglo de los datos:
 
 Sea $P = [e_1, e_2, ..., e_p]$.
@@ -401,7 +411,7 @@ Nótese que los resultados con los datos corregidos son equivalentes a los resul
 -------
 
 
-#### Agrupamiento según nivel de popularidad
+#### <a name="Agrupamiento-segun-nivel-de-popularidad"></a> Agrupamiento según nivel de popularidad
 Por otro lado, uno de los principales objetivos de los artistas es ser muy populares, esto por esto que creó una nueva variable categórica $popularity$ basada en un índice de popularidad por canción de la siguiente manera:
 
 | popularity | Nivel de popularidad | valor índice $i$ |
@@ -505,7 +515,7 @@ Del resultado anterior se puede concluir que el modelo clasifica erróneamente �
 -------
 
 
-#### Regresión lineal
+#### <a name="Regresion-lineal"></a> Regresión lineal
 
 Con el fin de estimar el índice de la variable $energy$, se realizó el modelo de regresión lineal $linear\_mod$, sin embargo, en este se encontraron muchas variables que no aportaba nada al modelo. Esto por esto que se utilizó el algoritmo $stepwise$ para encontrar el mejor modelo.
 ```{r, results='hide', warning=FALSE}
@@ -536,12 +546,12 @@ A partir del modelo obtenemos 4 graficos. Empezaremos por el Q-Q Plot, se puede 
 -------
 
 
-## Conclusiones
+## <a name="Conclusiones"></a> Conclusiones
 
 * lista sin orden específico
 * s
 
-## Bibliografía
+## <a name="Bibliografia"></a> Bibliografía
 
 1. KOVERHA, M., 2022. Top Hits Spotify from 2000-2019. [online] Kaggle.com. Available at: <https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019> [Accessed 25 May 2022].
 
