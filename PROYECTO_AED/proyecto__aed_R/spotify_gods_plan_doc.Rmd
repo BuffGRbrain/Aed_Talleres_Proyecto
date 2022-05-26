@@ -99,16 +99,17 @@ datasetWithoutCategoricalFisherWithPopularity <- dataset[,c(3,6,7,8,10,12:17)]
 2. [Base de datos utilizada](#base-de-datos)
 3. [Variables](#Variables)
 4. [Análisis exploratorio de los datos](#Analisis-exploratorio)
-4,1. [Boxplots](#Boxplots)
-4,2. [Matriz de correlación](#Matriz-de-correlacion)
-4.2. [PCA](#PCA)
+* [Barplot](#Barplot)
+* [Boxplots](#Boxplots)
+* [Matriz de correlación](#Matriz-de-correlacion)
+* [PCA](#PCA)
 5. [Agrupamiento de los géneros musicales](#Agrupamiento-de-los-generos-musicales)
-5,1. [Discriminante lineal de Fisher con datos puros](#Discriminante-lineal-de-Fisher-con-datos-puros)
-5,2. [Discriminante lineal de Fisher con datos corregidos](#Discriminante-lineal-de-Fisher-con-datos-corregidos)
-5,3. [Agrupamiento según nivel de popularidad](#Agrupamiento-segun-nivel-de-popularidad)
-6. [Regresión lineal](#Regresion-lineal)
-7. [Conclusiones](#Conclusiones)
-8. [Bibliografía](#Bibliografia)
+* [Discriminante lineal de Fisher con datos puros](#Discriminante-lineal-de-Fisher-con-datos-puros)
+* [Discriminante lineal de Fisher con datos corregidos](#Discriminante-lineal-de-Fisher-con-datos-corregidos)
+6. [Agrupamiento según nivel de popularidad](#Agrupamiento-segun-nivel-de-popularidad)
+7. [Regresión lineal sobre niveles de energía](#Regresion-lineal)
+8. [Conclusiones](#Conclusiones)
+9. [Bibliografía](#Bibliografia)
 
 -------
 
@@ -136,8 +137,6 @@ De las 18 variables disponibles en la base de datos usaremos las siguientes:
  
 * Popularity: Valor entre 0 y 100 que indica que tan popular esta canción, para una mayor facilidad en su uso, la modificamos y ahora es una v ariable que toma los valores 0,1 o 2 según su popularidad así: 0 ->0-30, 1 -> 31-60 y 2 60-100.
  
-* mode(de vd la usaremos?):
- 
 * Genre: Genero de la canción, en algunos casos tenían varios así que solo dejamos el principal para poder realizar una buena agrupación.
 
 #### Númericas
@@ -146,7 +145,7 @@ De las 18 variables disponibles en la base de datos usaremos las siguientes:
  
 * Danceability: Indice entre 0 y 1 que describe que tan bailable es una canción. (esta es la version resumida)
  
-* Energy: Indice entre 0 y 1que describe la intensidad y actividad de una canción.
+* Energy: Indice entre 0 y 1 que describe la intensidad y actividad de una canción.
  
 * Loudness: El volumen general de la canción medido en decibeles(db) y sus valores varían entre -60 a 0.
  
@@ -166,7 +165,7 @@ De las 18 variables disponibles en la base de datos usaremos las siguientes:
 
 ### <a name="Analisis-exploratorio"></a> Análisis exploratorio de los datos (Incluye PCA+gráficas)
 
-BarPlot canciones tipo 'explicit'
+#### <a name="Barplot"></a> Barplot de observación según categoría $explicit$
 
 ```{r, echo = FALSE}
 library(tidyverse)
@@ -175,7 +174,7 @@ ggplot(complete_data_set, aes(x = explicit, fill = explicit)) +
   scale_fill_manual(values = c("purple", "orange"))
 ```
 
-Segun este barplot, es mas probable lograr incluir una cancion entre los 'Top 100' al crear una cancion no 'explicit'
+Según este barplot, es más probable que una canción se encuentre entre los 'Top 100' al crear una cancion no 'explicit'.
 
 
 ```{r, echo = FALSE}
@@ -242,6 +241,18 @@ corrplot(cor_mt, type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45)
 
 ```
+En principio, se observa se evidencia que la mayoría de variables no están muy correlacionadas. Sin embargo, sí existen varios valores llamativos. El primero es la correlación entre $energy$ y $loudness$ que es igual a $0.65$, lo que significa que esta dos variables se comportan de manera similar, es decir, entre más $energy$ tenga una canción, es probable que también tenga más $loudness$.
+
+Otro de los valores llamativos es el de la correlación entre $energy$ y $acousticness$ que es $-0.44$, lo cual implica una relación negativa entre las variables, es decir, entre más energía tenga una canción, esta será menos acústica, lo cual es muy razonable con lo que sucede en la realidad.
+
+Finalmente, otra de las confirmaciones de los supuestos de la realidad es que entre más positiva ($valance$) sea una canción, tendrá más energía ($energy$) y será más bailable ($danceability$). Esto se puede ver reflejado con valores de correlación de $valance$ con $energy$ y $danceability$ de $0.33$ y $0.40$, respectivamente.
+
+```{r}
+cor_mt = cor(df_numeric_vals)
+
+```
+
+
 
 #### <a name="PCA"></a> PCA de las variables numéricas
 ```{r, echo=FALSE, warning=FALSE, out.width="60%", fig.align="center"}
@@ -541,15 +552,17 @@ La forma de validar el ajuste del modelo lineal es mediante el $R^2$ o coeficien
 autoplot(lm_energy)
 ```
 
-A partir del modelo obtenemos 4 graficos. Empezaremos por el Q-Q Plot, se puede observar que tiene un comportamiento normal, lo que es excelente para el modelo. Si no lo fuera, no podemos afirmar que los datos a partir de los cuales se creo el modelo lineal, siguen una distribucion normal. 
+A partir del modelo obtenemos 4 gráficos para verificar la validez del modelo. En primer lugar, se observa como los errores no aparentan seguir un patrón muy definido, razón por la cual se podría considerar que estos son independientes. Además, en el gráfico Q-Q plot de los errores se evidencia que estos siguen una distribución normal. Estas razones nos permiten afirmar que los resultados obtenidos por el modelo son válidos.
 
 -------
 
 
 ## <a name="Conclusiones"></a> Conclusiones
 
-* lista sin orden específico
-* s
+* Según los resultados obtenidos, podemos concluir que a pesar de que hay una gran cantidad de géneros musicales hoy en día (cada uno de ellos con su propia identidad, particularidades y propiedades), las canciones más ranqueadas en estos últimos tiempos tienden a compartir ciertas características muy semejantes unas con otras sin importar a que genero pertenezcan. Es decir, podemos observar que principalmente las canciones más ranqueadas tienden altamente a ser canciones bailables, con tonalidades positivas y alegres, que tengan cierto nivel de intensidad y que tenga un buen nivel de volumen.  
+* Además, podemos observar que la mayoría de canciones que se encuentran en nuestra base de datos comparten unas características que son muy propias del género Pop o generos parcialmente similares a este, como el Hip Hop y el Rock. De hecho, estos tres géneros abarcan más del 90% de las canciones que han estado en el Top 100 de Spotify en los años analizados.
+* Asímismo, podemos ver que las canciones que pertenecen a este top están muy influenciadas por las tendencias de la generación actual. En otras palabras, podemos ver claramente que cada vez las canciones con características más clásicas como lo son ser más instrumentales y acústicas tienden a difícilmente entrar en el top.  
+* En conclusión, para que una canción nueva tenga altas probabilidades de que sea muy popular, esta debería tener características características muy similar a las canciones que se analizaron en este estudio, además de pertenecer a los géneros que a la gente más le gusta últimamente.
 
 ## <a name="Bibliografia"></a> Bibliografía
 
