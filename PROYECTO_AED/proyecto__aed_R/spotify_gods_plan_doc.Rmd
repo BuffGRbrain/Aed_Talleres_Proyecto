@@ -245,7 +245,10 @@ fviz_pca_var(mod_pca,
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"))
 
 ```
-Podemos observar como 'Loudness' y 'energy' aportan significativamente al componente principal 2. Si un data point tiene valores muy bajos en esas dos variables, estara ploteado en la izquiera del grafico, 
+Podemos observar como 'Loudness' y 'energy' aportan significativamente en la explicacion de la componente principal 2, al presentar una relacion alta. Si un data point tiene valores muy bajos en esas dos variables, estara ploteado en la izquiera del grafico. De forma similar, valores altos en 'valence' implican valores altos en 'danceability', aportando significativamente en el componente principal 1. 
+
+La escala de contribucion indica que tanto una variable contribuye al componente principal. Podemos observar que hay una agrupacion de variables coloreadas con azul en el centro de los dos ejes, esto indica que todas estas variables no aportan significativamente. Esto se refleja, en el varianza explicada por los dos componentes principales, que no supera el 35% de la varianza total, incluso al ser los dos componentes principales con la mayor suma acumulada de varianza. 
+
 -------
 
 #### Agrupamiento de los géneros musicales.
@@ -520,12 +523,15 @@ lm_energy = lm(formula = energy ~ danceability + loudness + acousticness +
                  instrumentalness + liveness + valence + tempo, data = df_numeric_vals)
 summary(lm_energy)
 ```
+La forma de validar el ajuste del modelo lineal es mediante el $R^2$ o coeficiente de determinacion. La medida refleja la proporcion total de la varianza explicada por el modelo de regresion. En este caso en particular, el modelo dio un coeficiente de determinacion ($R^2$) de 0.5723, esto significa que el modelo explica el 57.23% de la variabilidad total de los datos. Sin embargo, es importante resaltar que esta medida aunque no esta cerca del 100%, no implica que el modelo haya fallado. Por eso debemos observar el 'Adjusted R-squared', que da 0.5708 y tambien analizar los valores residuales.
 
 #### Validación de supuestos del modelo
 
 ```{r, echo=FALSE, warning=FALSE, out.width="50%", fig.align="center"}
 autoplot(lm_energy)
 ```
+
+A partir del modelo obtenemos 4 graficos. Empezaremos por el Q-Q Plot, se puede observar que tiene un comportamiento normal, lo que es excelente para el modelo. Si no lo fuera, no podemos afirmar que los datos a partir de los cuales se creo el modelo lineal, siguen una distribucion normal. 
 
 -------
 
