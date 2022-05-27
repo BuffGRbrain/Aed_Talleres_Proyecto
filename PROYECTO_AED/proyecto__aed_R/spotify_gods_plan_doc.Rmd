@@ -1,5 +1,5 @@
 ---
-title: "spotify_gods_plan"
+title: "Análisis estadístico de las canciones más escuchadas de Spotify"
 author: "Guillermo Ribero, Rafael Cabrera, Juan Camilo Rodriguez, David Melendez"
 date: "5/24/2022"
 output: html_document
@@ -124,7 +124,7 @@ Para contribuir a los crecientes artistas particularmente en la plataforma de sp
 
 ### <a name="base-de-datos"></a> Base de datos utilizada
 
-Contiene las mejores 2000 canciones rankeadas entre los años 2000 a 2019, con 18 columnas que describen la canción y sus características tales como indices de popularidad, participación de la audiencia y demás. (idk about this)
+Contiene las mejores 2000 canciones rankeadas entre los años 2000 a 2019, con 18 columnas que describen la canción y sus características tales como indices de popularidad, participación de la audiencia y demás. 
 
 -------
 
@@ -133,9 +133,9 @@ De las 18 variables disponibles en la base de datos usaremos las siguientes:
 
 #### Categóricas 
 
-* Key: La clave en la que esta la canción, si no se detecta ninguna vale -1. NO LA USAREMOS
+* Key: La clave en la que esta la canción, si no se detecta ninguna vale -1. 
  
-* Popularity: Valor entre 0 y 100 que indica que tan popular esta canción, para una mayor facilidad en su uso, la modificamos y ahora es una v ariable que toma los valores 0,1 o 2 según su popularidad así: 0 ->0-30, 1 -> 31-60 y 2 60-100.
+* Popularity: Valor entre 0 y 100 que indica que tan popular esta canción, para una mayor facilidad en su uso, la modificamos y ahora es una variable que toma los valores 0,1 o 2 según su popularidad así: 0 ->0-30, 1 -> 31-60 y 2 60-100.
  
 * Genre: Genero de la canción, en algunos casos tenían varios así que solo dejamos el principal para poder realizar una buena agrupación.
 
@@ -143,17 +143,17 @@ De las 18 variables disponibles en la base de datos usaremos las siguientes:
 
 * Duration_ms: Duración de la canción en milisegundos.
  
-* Danceability: Indice entre 0 y 1 que describe que tan bailable es una canción. (esta es la version resumida)
+* Danceability: Indice entre 0 y 1 que describe que tan bailable es una canción. 
  
 * Energy: Indice entre 0 y 1 que describe la intensidad y actividad de una canción.
  
 * Loudness: El volumen general de la canción medido en decibeles(db) y sus valores varían entre -60 a 0.
  
-* Speechines: Detecta la presencia de palabras habladas en una canción y varía entre 0 a 1. (No se si poner algo de su interpretación pues no c reo que sea necesario)
+* Speechines: Detecta la presencia de palabras habladas en una canción y varía entre 0 a 1. 
  
 * Acousticness: Un indice entre 0.0 y 1, que mide que tan acústica es una canción.
  
-* Instrumentalness: Indice entre 0.0 y 1 sobre que tan compuesta por solo instrumentos es una canción, si se acerca mucho a 1, la canción tiene m uy pocos vocales.
+* Instrumentalness: Indice entre 0.0 y 1 sobre que tan compuesta por solo instrumentos es una canción, si se acerca mucho a 1, la canción tiene muy pocos vocales.
  
 * Liveness: Indice entre 0 y 1 de cuanto participa la audiencia en la canción.
  
@@ -175,18 +175,6 @@ ggplot(complete_data_set, aes(x = explicit, fill = explicit)) +
 ```
 
 Según este barplot, es más probable que una canción se encuentre entre los 'Top 100' al crear una cancion no 'explicit'.
-
-
-```{r, echo = FALSE}
-datasetEminemKaty <- complete_data_set %>% 
-  dplyr::filter(artist %in% c("Eminem", "Katy Perry")) %>%
-  group_by(explicit) %>%
-  count(artist) %>%
-  ungroup()
-
-datasetEminemKaty
-```
-Katy Perry y Eminem, dos cantantes muy populares, sin embargo logran canciones en el 'Top 100' al utilizar un acercamiento distinto respecto a la variable 'explicit'
 
 ```{r, echo = FALSE, fig.align="center"}
 
@@ -568,8 +556,8 @@ A partir del modelo obtenemos 4 gráficos para verificar la validez del modelo. 
 
 1. KOVERHA, M., 2022. Top Hits Spotify from 2000-2019. [online] Kaggle.com. Available at: <https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019> [Accessed 25 May 2022].
 
-2. https://www.tunecore.com/
+2. SELL YOUR MUSIC WORLDWIDE. tunecore. (2022). Retrieved 25 May 2022, from https://www.tunecore.com/.
 
-3. https://www.orpheusaudioacademy.com/spotify-pay/#:~:text=You%20can%20expect%20to%20make,between%20%240.0033%20%2D%20%240.0054%20per%20stream.
+3. Ramm, R. (2022). How Much Does Spotify Pay Per 1,000 Streams In 2022 [Free Calculator]. Orpheusaudioacademy.com. Retrieved 22 May 2022, from https://www.orpheusaudioacademy.com/spotify-pay/#:~:text=You%20can%20expect%20to%20make,between%20%240.0033%20%2D%20%240.0054%20per%20stream.
 
 
